@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
 
-func Look(gs *game.GameState, noun string) {
+func Look(gs *game.GameState, cmd parser.Command) {
 	room := world.Rooms[gs.CurrentRoom]
+	noun := cmd.Noun
 
 	if noun == "" {
 		fmt.Println(room.Description)
