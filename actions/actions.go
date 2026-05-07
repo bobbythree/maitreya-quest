@@ -1,3 +1,4 @@
+// Package actions regisrty
 package actions
 
 import (
