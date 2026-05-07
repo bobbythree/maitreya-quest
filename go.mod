@@ -1,3 +1,3 @@
-module githib.com/bobbythree/maitreya-quest
+module github.com/bobbythree/maitreya-quest
 
 go 1.26.2

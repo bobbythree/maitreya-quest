@@ -1,15 +1,17 @@
 package world
 
 type Object struct {
-	ID          string
-	Name        string
-	Description string
-	Portable    bool
-	Container   bool
-	Openable    bool
-	Open        bool
-	Parent      string
-	Contains    []string
+	ID                string
+	Name              string
+	Description       string
+	OpenDescription   string
+	ClosedDescription string
+	Portable          bool
+	Container         bool
+	Openable          bool
+	Open              bool
+	Parent            string
+	Contains          []string
 }
 
 var Objects = map[string]Object{
@@ -20,13 +22,13 @@ var Objects = map[string]Object{
 	},
 
 	"drawer": {
-		ID:          "drawer",
-		Name:        "drawer",
-		Description: "A wooden drawer built into the desk.",
-
-		Container: true,
-		Openable:  true,
-		Open:      false,
+		ID:                "drawer",
+		Name:              "drawer",
+		ClosedDescription: "A wooden drawer built into the desk.",
+		OpenDescription:   "There is a thumbdrive in the drawer.",
+		Container:         true,
+		Openable:          true,
+		Open:              false,
 
 		Parent: "desk",
 
@@ -42,19 +44,21 @@ var Objects = map[string]Object{
 	},
 
 	"window": {
-		ID:          "window",
-		Name:        "window",
-		Description: "The window is painted black and you cannot see out.",
-		Openable:    true,
-		Open:        false,
+		ID:                "window",
+		Name:              "window",
+		ClosedDescription: "The window is painted black and you cannot see out.",
+		OpenDescription:   "You look out the window and see....",
+		Openable:          true,
+		Open:              false,
 	},
 
 	"door": {
-		ID:          "door",
-		Name:        "door",
-		Description: "Your bedroom door.",
-		Openable:    true,
-		Open:        false,
+		ID:                "door",
+		Name:              "door",
+		ClosedDescription: "Your bedroom door.",
+		OpenDescription:   "Looking out the door you see a small landing that leads to a downward staircase.",
+		Openable:          true,
+		Open:              false,
 	},
 
 	"thumbdrive": {
