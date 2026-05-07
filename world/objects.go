@@ -10,6 +10,8 @@ type Object struct {
 	Container         bool
 	Openable          bool
 	Open              bool
+	Lockable          bool
+	Locked            bool
 	Parent            string
 	Contains          []string
 }
