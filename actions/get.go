@@ -4,11 +4,13 @@ import (
 	"fmt"
 
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
 
-func Get(gs *game.GameState, noun string) {
+func Get(gs *game.GameState, cmd parser.Command) {
 	room := world.Rooms[gs.CurrentRoom]
+	noun := cmd.Noun
 
 	for _, objID := range room.Objects {
 
