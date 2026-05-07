@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"os"
+	"strings"
 
 	"github.com/bobbythree/maitreya-quest/actions"
 	"github.com/bobbythree/maitreya-quest/game"
@@ -16,7 +17,7 @@ func Run(gs *game.GameState) {
 	fmt.Println("Welcome to Maitreya Quest.")
 	fmt.Println()
 
-	actions.Look(gs, parser.Command{})
+	//actions.Look(gs, parser.Command{})
 
 	for {
 
@@ -27,6 +28,11 @@ func Run(gs *game.GameState) {
 		}
 
 		input := scanner.Text()
+
+		// check for empty command (user hits enter with no command)
+		if strings.TrimSpace(input) == "" {
+			continue
+		}
 
 		cmd := parser.Parse(input)
 
