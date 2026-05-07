@@ -9,49 +9,42 @@ import (
 )
 
 func Get(gs *game.GameState, cmd parser.Command) {
-	room := world.Rooms[gs.CurrentRoom]
 	noun := cmd.Noun
 
-	for _, objID := range room.Objects {
+	room := world.Rooms[gs.CurrentRoom]
 
-		obj := world.Objects[objID]
+	obj, ok := world.FindVisibleObject(room, noun)
 
-		if obj.ID == noun && obj.Portable {
+	if !ok {
+		fmt.Println("You don't see that.")
+		return
+	}
 
-			gs.Inventory = append(gs.Inventory, noun)
+	if !obj.Portable {
+		fmt.Println("You can't take that.")
+		return
+	}
 
-			fmt.Println("Taken.")
+	gs.Inventory = append(gs.Inventory, obj.ID)
 
-			return
-		}
+	if obj.Parent != "" {
 
-		if obj.Container {
-			for i, insideID := range obj.Contains {
-				if insideID == noun {
+		parent := world.Objects[obj.Parent]
 
-					item := world.Objects[insideID]
+		for i, childID := range parent.Contains {
+			if childID == obj.ID {
 
-					if !item.Portable {
-						fmt.Println("You can't take that.")
-						return
-					}
+				parent.Contains = append(
+					parent.Contains[:i],
+					parent.Contains[i+1:]...,
+				)
 
-					gs.Inventory = append(gs.Inventory, noun)
+				world.Objects[parent.ID] = parent
 
-					obj.Contains = append(
-						obj.Contains[:i],
-						obj.Contains[i+1:]...,
-					)
-
-					world.Objects[objID] = obj
-
-					fmt.Println("Taken.")
-
-					return
-				}
+				break
 			}
 		}
 	}
 
-	fmt.Println("You don't see that.")
+	fmt.Println("Taken.")
 }

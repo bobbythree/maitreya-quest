@@ -21,6 +21,10 @@ var Objects = map[string]Object{
 		ID:          "desk",
 		Name:        "desk",
 		Description: "An old wooden desk with a drawer.",
+		Container:   true,
+		Contains: []string{
+			"drawer",
+		},
 	},
 
 	"drawer": {
