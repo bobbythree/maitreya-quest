@@ -11,6 +11,7 @@ var ActionMap = map[string]ActionFunc{
 	"look":      Look,
 	"get":       Get,
 	"take":      Get,
+	"open":      Open,
 	"inventory": Inventory,
 	"inv":       Inventory,
 	"i":         Inventory,
