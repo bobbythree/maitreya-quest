@@ -1,0 +1,94 @@
+# Binaries
+bin/
+dist/
+build/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Go workspace
+go.work
+go.work.sum
+
+# Dependency directories (rare in modern Go, but safe)
+vendor/
+
+# Coverage / profiling
+coverage.out
+coverage.html
+*.coverprofile
+cpu.prof
+mem.prof
+profile.out
+
+# Logs
+*.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# IDE / Editor
+.idea/
+.vscode/
+
+# Vim / Neovim / LazyVim
+*.swp
+*.swo
+*~
+Session.vim
+.nvim.lua
+
+# OS / Linux junk
+.DS_Store
+Thumbs.db
+
+# Temporary files
+tmp/
+temp/
+.cache/
+
+# TUI save/debug files
+debug/
+saves/
+
+# SQLite / local game databases
+*.db
+*.sqlite
+*.sqlite3
+
+# Generated assets
+generated/
+exports/
+
+# Ignore local config overrides
+config.local.json
+config.local.yaml
+config.local.yml
+
+# Test artifacts
+/test_output/
+/screenshots/
+
+# Air live reload
+.air.toml
+
+# Delve debugger
+__debug_bin
+
+# Node stuff (only if you later add web tooling)
+node_modules/
+
+# Terraform (if you ever deploy infra)
+.terraform/
+*.tfstate
+*.tfstate.*
+
+# Misc
+*.bak
+*.tmp
