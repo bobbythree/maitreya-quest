@@ -6,7 +6,9 @@ type Object struct {
 	Description string
 	Portable    bool
 	Container   bool
+	Openable    bool
 	Open        bool
+	Parent      string
 	Contains    []string
 }
 
@@ -15,29 +17,44 @@ var Objects = map[string]Object{
 		ID:          "desk",
 		Name:        "desk",
 		Description: "An old wooden desk with a drawer.",
-		Container:   true,
-		Open:        true,
+	},
+
+	"drawer": {
+		ID:          "drawer",
+		Name:        "drawer",
+		Description: "A wooden drawer built into the desk.",
+
+		Container: true,
+		Openable:  true,
+		Open:      false,
+
+		Parent: "desk",
+
 		Contains: []string{
-			"key",
+			"thumbdrive",
 		},
 	},
 
 	"computer": {
 		ID:          "computer",
 		Name:        "computer",
-		Description: "A dusty old computer.",
+		Description: "Your computer sits on top of the desk.",
 	},
 
 	"window": {
 		ID:          "window",
 		Name:        "window",
-		Description: "Rain taps softly against the glass.",
+		Description: "The window is painted black and you cannot see out.",
+		Openable:    true,
+		Open:        false,
 	},
 
 	"door": {
 		ID:          "door",
 		Name:        "door",
-		Description: "A heavy metal door.",
+		Description: "Your bedroom door.",
+		Openable:    true,
+		Open:        false,
 	},
 
 	"thumbdrive": {
