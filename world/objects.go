@@ -43,6 +43,12 @@ var Objects = map[string]Object{
 		},
 	},
 
+	"bed": {
+		ID:          "bed",
+		Name:        "bed",
+		Description: "a small mattress on the floor. Typical.",
+	},
+
 	"computer": {
 		ID:          "computer",
 		Name:        "computer",

@@ -17,6 +17,7 @@ var Rooms = map[string]Room{
 			"computer",
 			"window",
 			"door",
+			"bed",
 		},
 	},
 }
