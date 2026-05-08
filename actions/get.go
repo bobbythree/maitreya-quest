@@ -25,7 +25,7 @@ func Get(gs *game.GameState, cmd parser.Command) {
 		return
 	}
 
-	gs.Inventory = append(gs.Inventory, obj.ID)
+	gs.Player.Inventory = append(gs.Player.Inventory, obj.ID)
 
 	if obj.Parent != "" {
 
@@ -45,6 +45,9 @@ func Get(gs *game.GameState, cmd parser.Command) {
 			}
 		}
 	}
+
+	obj.Parent = "inventory"
+	world.Objects[obj.ID] = obj
 
 	fmt.Println("Taken.")
 }
