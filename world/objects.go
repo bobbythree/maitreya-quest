@@ -31,7 +31,7 @@ var Objects = map[string]Object{
 		ID:                "drawer",
 		Name:              "drawer",
 		ClosedDescription: "A wooden drawer built into the desk.",
-		OpenDescription:   "There is a thumbdrive in the drawer.",
+		OpenDescription:   "The drawer is open.",
 		Container:         true,
 		Openable:          true,
 		Open:              false,

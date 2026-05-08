@@ -37,5 +37,5 @@ func Open(gs *game.GameState, cmd parser.Command) {
 	obj.Open = true
 	world.Objects[noun] = obj
 
-	fmt.Printf("You open the %v", obj.Name)
+	fmt.Printf("You open the %v\n", obj.Name)
 }
