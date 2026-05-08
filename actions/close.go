@@ -8,7 +8,7 @@ import (
 	"github.com/bobbythree/maitreya-quest/world"
 )
 
-func Open(gs *game.GameState, cmd parser.Command) {
+func Close(gs *game.GameState, cmd parser.Command) {
 	noun := cmd.Noun
 
 	room := world.Rooms[gs.CurrentRoom]
@@ -21,23 +21,18 @@ func Open(gs *game.GameState, cmd parser.Command) {
 	}
 
 	if !obj.Openable {
-		fmt.Println("You can't open that.")
+		fmt.Println("You can't close that.")
 		return
 	}
 
-	if obj.Open {
-		fmt.Println("It's already open.")
+	if !obj.Open {
+		fmt.Println("It's already closed.")
 		return
 	}
 
-	if obj.Locked {
-		fmt.Println("It's locked.")
-		return
-	}
-
-	obj.Open = true
+	obj.Open = false
 
 	world.Objects[obj.ID] = obj
 
-	fmt.Printf("You open the %s.\n", obj.Name)
+	fmt.Printf("You close the %s.\n", obj.Name)
 }
