@@ -1,6 +1,8 @@
 package world
 
-// helper for seeing into parent containers
+import "github.com/bobbythree/maitreya-quest/game"
+
+// helper for searching nested containers
 
 func findObjectRecursive(obj Object, target string) (Object, bool) {
 	for _, childID := range obj.Contains {
@@ -26,9 +28,13 @@ func findObjectRecursive(obj Object, target string) (Object, bool) {
 	return Object{}, false
 }
 
-// public func
+// searches visible room objects and player inventory
 
-func FindVisibleObject(room Room, target string) (Object, bool) {
+func FindVisibleObject(gs *game.GameState, target string) (Object, bool) {
+	room := Rooms[gs.CurrentRoom]
+
+	// search room objects
+
 	for _, objID := range room.Objects {
 
 		obj := Objects[objID]
@@ -46,6 +52,17 @@ func FindVisibleObject(room Room, target string) (Object, bool) {
 					return found, true
 				}
 			}
+		}
+	}
+
+	// search inventory
+
+	for _, objID := range gs.Player.Inventory {
+
+		obj := Objects[objID]
+
+		if obj.ID == target {
+			return obj, true
 		}
 	}
 
