@@ -76,7 +76,7 @@ var Objects = map[string]Object{
 	"thumbdrive": {
 		ID:          "thumbdrive",
 		Name:        "thumbdrive",
-		Description: "A small thumbdrive.",
+		Description: "A really old thumbdrive. Not a model that you recognize.",
 		Parent:      "drawer",
 		Portable:    true,
 	},
