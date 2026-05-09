@@ -12,6 +12,7 @@ import (
 )
 
 func Run(gs *game.GameState) {
+	fmt.Print("\033[H\033[2J")
 	scanner := bufio.NewScanner(os.Stdin)
 
 	fmt.Println("Welcome to Maitreya Quest.")
