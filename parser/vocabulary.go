@@ -14,6 +14,8 @@ var VerbAliases = map[string]string{
 	"close": "close",
 	"shut":  "close",
 
+	"use": "use",
+
 	"inventory": "inventory",
 	"inv":       "inventory",
 	"i":         "inventory",
