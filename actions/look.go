@@ -17,7 +17,7 @@ func Look(gs *game.GameState, cmd parser.Command) {
 		return
 	}
 
-	obj, ok := world.FindVisibleObject(room, directObject)
+	obj, ok := world.FindVisibleObject(gs, directObject)
 
 	if !ok {
 		fmt.Println("You don't see that")

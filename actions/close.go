@@ -11,9 +11,7 @@ import (
 func Close(gs *game.GameState, cmd parser.Command) {
 	directObject := cmd.DirectObject
 
-	room := world.Rooms[gs.CurrentRoom]
-
-	obj, ok := world.FindVisibleObject(room, directObject)
+	obj, ok := world.FindVisibleObject(gs, directObject)
 
 	if !ok {
 		fmt.Println("You don't see that.")
