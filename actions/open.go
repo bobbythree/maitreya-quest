@@ -9,11 +9,11 @@ import (
 )
 
 func Open(gs *game.GameState, cmd parser.Command) {
-	noun := cmd.Noun
+	directObject := cmd.DirectObject
 
 	room := world.Rooms[gs.CurrentRoom]
 
-	obj, ok := world.FindVisibleObject(room, noun)
+	obj, ok := world.FindVisibleObject(room, directObject)
 
 	if !ok {
 		fmt.Println("You don't see that.")

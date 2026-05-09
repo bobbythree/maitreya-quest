@@ -10,14 +10,14 @@ import (
 
 func Look(gs *game.GameState, cmd parser.Command) {
 	room := world.Rooms[gs.CurrentRoom]
-	noun := cmd.Noun
+	directObject := cmd.DirectObject
 
-	if noun == "" {
+	if directObject == "" {
 		fmt.Println(room.Description)
 		return
 	}
 
-	obj, ok := world.FindVisibleObject(room, noun)
+	obj, ok := world.FindVisibleObject(room, directObject)
 
 	if !ok {
 		fmt.Println("You don't see that")
