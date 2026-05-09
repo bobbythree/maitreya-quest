@@ -13,6 +13,6 @@ var ActionMap = map[string]ActionFunc{
 	"get":       Get,
 	"open":      Open,
 	"close":     Close,
-	"use":       use,
+	"use":       Use,
 	"inventory": Inventory,
 }

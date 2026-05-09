@@ -46,7 +46,7 @@ func Use(gs *game.GameState, cmd parser.Command) {
 
 	if objA.ID == "thumbdrive" && objB.ID == "computer" {
 
-		fmt.Println("You insert the thumbdrive into the computer.")
+		fmt.Println("This thumbdrive doesn't fit in the computer's port. You'll have to find a wayyy older computer.")
 
 		return
 	}
