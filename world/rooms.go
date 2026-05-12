@@ -11,7 +11,7 @@ var Rooms = map[string]Room{
 	"bedroom": {
 		ID:          "bedroom",
 		Name:        "bedroom",
-		Description: "This is your bedroom. You see a desk with a computer on it, a window and a door.",
+		Description: "This is your bedroom. You see a [desk] with a [computer] on it, your [bed], a [window] and a [door].",
 		Objects: []string{
 			"desk",
 			"computer",
