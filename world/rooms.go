@@ -5,6 +5,7 @@ type Room struct {
 	Name        string
 	Description string
 	Objects     []string
+	Exits       map[string]string
 }
 
 var Rooms = map[string]Room{
@@ -19,5 +20,13 @@ var Rooms = map[string]Room{
 			"door",
 			"bed",
 		},
+		Exits: map[string]string{
+			"east": "hallway",
+		},
+	},
+	"hallway": {
+		ID:          "hallway",
+		Name:        "hallway",
+		Description: "You stand on the small landing at the top of the stairs. The door back into your apartment is to the [west] and the staircase is to the [east].",
 	},
 }
