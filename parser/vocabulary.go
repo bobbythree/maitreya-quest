@@ -20,3 +20,21 @@ var VerbAliases = map[string]string{
 	"inv":       "inventory",
 	"i":         "inventory",
 }
+
+var DirectionAliases = map[string]string{
+	"n": "north",
+	"s": "south",
+	"e": "east",
+	"w": "west",
+	"u": "up",
+	"d": "down",
+}
+
+var Directions = map[string]bool{
+	"north": true,
+	"south": true,
+	"east":  true,
+	"west":  true,
+	"up":    true,
+	"down":  true,
+}
