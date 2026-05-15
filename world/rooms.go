@@ -27,6 +27,18 @@ var Rooms = map[string]Room{
 	"hallway": {
 		ID:          "hallway",
 		Name:        "hallway",
-		Description: "You stand on the small landing at the top of the stairs. The door back into your apartment is to the [west] and the staircase is to the [east].",
+		Description: "You stand on the small landing at the top of the stairs. The door back into your apartment is to the [west]. A staircase leads [down] to the street",
+		Exits: map[string]string{
+			"west": "bedroom",
+			"down": "street",
+		},
+	},
+	"street": {
+		ID:          "street",
+		Name:        "street",
+		Description: "The street outside your apartment is quiet. You see a man standing on the corner.",
+		Exits: map[string]string{
+			"west": "hallway",
+		},
 	},
 }
