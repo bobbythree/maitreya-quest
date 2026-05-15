@@ -59,7 +59,7 @@ var Objects = map[string]Object{
 		ID:                "window",
 		Name:              "window",
 		ClosedDescription: "The window is painted black and you cannot see out.",
-		OpenDescription:   "You look out the window and see....",
+		OpenDescription:   "Looking out the open window you can see many video screens up on tall poles that are broadcasting ads for various corporate interests such as: Pear, MacroFirm and Moser",
 		Openable:          true,
 		Open:              false,
 	},
