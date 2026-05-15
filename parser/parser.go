@@ -11,9 +11,22 @@ type Command struct {
 
 func Parse(input string) Command {
 	words := strings.Fields(strings.ToLower(input))
+	firstWord := words[0]
 	cmd := Command{}
 
 	if len(words) == 0 {
+		return cmd
+	}
+
+	// normalize direction aliases
+	if alias, ok := DirectionAliases[firstWord]; ok {
+		firstWord = alias
+	}
+
+	// handle bare directions without 'go' verb
+	if Directions[firstWord] {
+		cmd.Verb = "go"
+		cmd.DirectObject = firstWord
 		return cmd
 	}
 
