@@ -1,9 +1,8 @@
 package actions
 
 import (
-	"fmt"
-
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/output"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
@@ -14,12 +13,12 @@ func Get(gs *game.GameState, cmd parser.Command) {
 	obj, ok := world.FindVisibleObject(gs, directObject)
 
 	if !ok {
-		fmt.Println("You don't see that.")
+		output.Println("You don't see that.")
 		return
 	}
 
 	if !obj.Portable {
-		fmt.Println("You can't take that.")
+		output.Println("You can't take that.")
 		return
 	}
 
@@ -47,5 +46,5 @@ func Get(gs *game.GameState, cmd parser.Command) {
 	obj.Parent = "inventory"
 	world.Objects[obj.ID] = obj
 
-	fmt.Println("Taken.")
+	output.Println("Taken.")
 }

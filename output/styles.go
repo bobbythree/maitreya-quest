@@ -1,4 +1,4 @@
-package tui
+package output
 
 import "charm.land/lipgloss/v2"
 

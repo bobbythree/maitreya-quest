@@ -1,9 +1,8 @@
 package actions
 
 import (
-	"fmt"
-
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/output"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
@@ -13,36 +12,36 @@ func Look(gs *game.GameState, cmd parser.Command) {
 	directObject := cmd.DirectObject
 
 	if directObject == "" {
-		fmt.Println(room.Description)
+		output.Println(room.Description)
 		return
 	}
 
 	obj, ok := world.FindVisibleObject(gs, directObject)
 
 	if !ok {
-		fmt.Println("You don't see that")
+		output.Println("You don't see that")
 		return
 	}
 
 	if obj.Openable {
 		if obj.Open {
-			fmt.Println(obj.OpenDescription)
+			output.Println(obj.OpenDescription)
 		} else {
-			fmt.Println(obj.ClosedDescription)
+			output.Println(obj.ClosedDescription)
 		}
 	} else {
-		fmt.Println(obj.Description)
+		output.Println(obj.Description)
 	}
 
 	if obj.Container && obj.Open {
 		if len(obj.Contains) > 0 {
-			fmt.Println("You see:")
+			output.Println("You see:")
 			for _, insideID := range obj.Contains {
 				inside := world.Objects[insideID]
-				fmt.Println("- ", inside.Name)
+				output.Println("- " + inside.Name)
 			}
 		} else {
-			fmt.Println("It's empty")
+			output.Println("It's empty")
 		}
 	}
 }

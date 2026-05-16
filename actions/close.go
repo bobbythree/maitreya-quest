@@ -1,9 +1,8 @@
 package actions
 
 import (
-	"fmt"
-
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/output"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
@@ -14,17 +13,17 @@ func Close(gs *game.GameState, cmd parser.Command) {
 	obj, ok := world.FindVisibleObject(gs, directObject)
 
 	if !ok {
-		fmt.Println("You don't see that.")
+		output.Println("You don't see that.")
 		return
 	}
 
 	if !obj.Openable {
-		fmt.Println("You can't close that.")
+		output.Println("You can't close that.")
 		return
 	}
 
 	if !obj.Open {
-		fmt.Println("It's already closed.")
+		output.Println("It's already closed.")
 		return
 	}
 
@@ -32,5 +31,5 @@ func Close(gs *game.GameState, cmd parser.Command) {
 
 	world.Objects[obj.ID] = obj
 
-	fmt.Printf("You close the %s.\n", obj.Name)
+	output.Printf("You close the %s.\n", obj.Name)
 }
