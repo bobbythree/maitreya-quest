@@ -2,6 +2,7 @@ package tui
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -15,7 +16,7 @@ import (
 )
 
 func Run(gs *game.GameState) {
-	output.RawPrint("\033[H\033[2J")
+	fmt.Print("\033[H\033[2J")
 	scanner := bufio.NewScanner(os.Stdin)
 
 	openingNarration := "Our story takes place on Earth 100 years in the future and roughly 100 years since humankind achieved AGI (Artificial General Intelligence). As a result of handing nearly all creative and intellectual tasks over to AI long ago, the human mind has atrophied to a critical extent. The majority of humans are either almost too dumb to talk to, or animalistally violent. A prophecy tells of someone called 'Maitreya', who along with the help of an 'other wordly being', will over take the AI and restore humanity to it's former creative and intellectual glory."
@@ -29,16 +30,16 @@ func Run(gs *game.GameState) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	output.RawPrintln(logo)
+	output.Println(logo)
 
 	time.Sleep(1 * time.Second)
 	typewriterEffect(openingNarration)
-	output.RawPrintln("")
+	fmt.Println()
 
 	// game loop
 	for {
 
-		output.RawPrint("\n> ")
+		fmt.Print("\n> ")
 
 		if !scanner.Scan() {
 			break
@@ -68,7 +69,7 @@ func Run(gs *game.GameState) {
 func typewriterEffect(text string) {
 	renderedText := output.Render(text)
 	for _, char := range renderedText {
-		output.RawPrint(string(char))
+		fmt.Print(string(char))
 		time.Sleep(10 * time.Millisecond)
 	}
 }

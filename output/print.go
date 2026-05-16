@@ -17,11 +17,3 @@ func Printf(format string, args ...any) {
 func Render(text string) string {
 	return GlobalGameStyle.Render(text)
 }
-
-func RawPrint(text string) {
-	fmt.Print(text)
-}
-
-func RawPrintln(text string) {
-	fmt.Println(text)
-}
