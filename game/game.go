@@ -2,7 +2,7 @@ package game
 
 func NewGame() *GameState {
 	return &GameState{
-		CurrentRoom: "bedroom",
+		CurrentRoom: "apartment",
 		Player: Player{
 			Inventory: []string{},
 		},

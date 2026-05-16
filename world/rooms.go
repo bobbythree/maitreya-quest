@@ -9,10 +9,10 @@ type Room struct {
 }
 
 var Rooms = map[string]Room{
-	"bedroom": {
-		ID:          "bedroom",
-		Name:        "bedroom",
-		Description: "This is your bedroom. You see a [desk] with a [computer] on it, your [bed], a [window] and a [door].",
+	"apartment": {
+		ID:          "apartment",
+		Name:        "apartment",
+		Description: "You are in your small studio apartment which is dimly lit only by artificial light coming in though the window. In the room is your bed, your computer which sits on a desk, one window and a door to the east.",
 		Objects: []string{
 			"desk",
 			"computer",
@@ -29,7 +29,7 @@ var Rooms = map[string]Room{
 		Name:        "hallway",
 		Description: "You stand on the small landing at the top of the stairs. The door back into your apartment is to the [west]. A staircase leads [down] to the street",
 		Exits: map[string]string{
-			"west": "bedroom",
+			"west": "apartment",
 			"down": "street",
 		},
 	},
