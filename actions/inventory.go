@@ -15,6 +15,6 @@ func Inventory(gs *game.GameState, cmd parser.Command) {
 	output.Println("You are carrying:")
 
 	for _, item := range gs.Player.Inventory {
-		output.Println("-" + item)
+		output.Println("- " + item)
 	}
 }
