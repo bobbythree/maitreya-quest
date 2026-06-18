@@ -12,6 +12,8 @@ type Object struct {
 	Open              bool
 	Lockable          bool
 	Locked            bool
+	Talkable          bool
+	Dialog            string
 	Parent            string
 	Contains          []string
 }
@@ -79,5 +81,12 @@ var Objects = map[string]Object{
 		Description: "A really old thumbdrive. Not a model that you recognize.",
 		Parent:      "drawer",
 		Portable:    true,
+	},
+	"man": {
+		ID:          "man",
+		Name:        "man",
+		Description: "Description of hacker looking dude...",
+		Talkable:    true,
+		Dialog:      "The prophecy is true...",
 	},
 }
