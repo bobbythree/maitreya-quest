@@ -37,6 +37,9 @@ var Rooms = map[string]Room{
 		ID:          "street",
 		Name:        "street",
 		Description: "The street outside your apartment is quiet. You see a man standing on the corner.",
+		Objects: []string{
+			"man",
+		},
 		Exits: map[string]string{
 			"west": "hallway",
 		},
