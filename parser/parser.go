@@ -12,12 +12,13 @@ type Command struct {
 
 func Parse(input string) Command {
 	words := strings.Fields(strings.ToLower(input))
-	firstWord := words[0]
 	cmd := Command{}
 
 	if len(words) == 0 {
 		return cmd
 	}
+
+	firstWord := words[0]
 
 	// normalize direction aliases
 	if alias, ok := DirectionAliases[firstWord]; ok {
@@ -31,19 +32,20 @@ func Parse(input string) Command {
 		return cmd
 	}
 
-	verb, ok := VerbAliases[words[0]]
+	verb, ok := VerbAliases[firstWord]
 	if ok {
 		cmd.Verb = verb
 	} else {
-		cmd.Verb = words[0]
+		cmd.Verb = firstWord
 	}
 
 	if len(words) == 1 {
 		return cmd
 	}
 
-	prepIndex := -1                   // no prep found yet
-	for i := 1; i < len(words); i++ { // start loop at word 1, not 0 (skip verb)
+	prepIndex := -1
+
+	for i := 1; i < len(words); i++ {
 		if Prepositions[words[i]] {
 			prepIndex = i
 			cmd.Preposition = words[i]
@@ -51,18 +53,27 @@ func Parse(input string) Command {
 		}
 	}
 
-	// if no prep
+	// no preposition:
+	// "look door"
 	if prepIndex == -1 {
 		cmd.DirectObject = words[1]
 		return cmd
 	}
 
-	// if prep is after word 1, then word 1 is dirObj
-	if prepIndex > 1 {
-		cmd.DirectObject = words[1]
+	// preposition immediately after verb:
+	// "look at door"
+	// "talk to man"
+	if prepIndex == 1 {
+		if prepIndex < len(words)-1 {
+			cmd.DirectObject = words[prepIndex+1]
+		}
+		return cmd
 	}
 
-	// if there's a word after the prep, that word is indObj
+	// preposition after direct object:
+	// "use key on door"
+	cmd.DirectObject = words[1]
+
 	if prepIndex < len(words)-1 {
 		cmd.IndirectObject = words[prepIndex+1]
 	}
