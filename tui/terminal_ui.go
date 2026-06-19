@@ -1,3 +1,4 @@
+// Package tui
 package tui
 
 import (
@@ -62,6 +63,10 @@ func Run(gs *game.GameState) {
 		}
 
 		action(gs, cmd)
+	}
+	// error handling for scanner
+	if err := scanner.Err(); err != nil {
+		log.Printf("scanner error: %v", err)
 	}
 }
 
