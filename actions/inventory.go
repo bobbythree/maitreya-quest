@@ -1,20 +1,24 @@
 package actions
 
 import (
+	"strings"
+
 	"github.com/bobbythree/maitreya-quest/game"
-	"github.com/bobbythree/maitreya-quest/output"
 	"github.com/bobbythree/maitreya-quest/parser"
 )
 
-func Inventory(gs *game.GameState, cmd parser.Command) {
+func Inventory(gs *game.GameState, cmd parser.Command) string {
 	if len(gs.Player.Inventory) == 0 {
-		output.Println("You are carrying nothing.")
-		return
+		return "You are carrying nothing."
 	}
 
-	output.Println("You are carrying:")
+	result := strings.Builder{}
+
+	result.WriteString("You are carrying:")
 
 	for _, item := range gs.Player.Inventory {
-		output.Println("- " + item)
+		result.WriteString("\n- " + item)
 	}
+
+	return result.String()
 }

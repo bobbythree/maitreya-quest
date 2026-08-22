@@ -2,21 +2,21 @@ package actions
 
 import (
 	"github.com/bobbythree/maitreya-quest/game"
-	"github.com/bobbythree/maitreya-quest/output"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
 
-func Go(gs *game.GameState, cmd parser.Command) {
+func Go(gs *game.GameState, cmd parser.Command) string {
 	direction := cmd.DirectObject
 	room := world.Rooms[gs.CurrentRoom]
 
 	nextRoom, ok := room.Exits[direction]
 	if !ok {
-		output.Println("You can't go that way")
-		return
+		return "You can't go that way"
 	}
 
 	gs.CurrentRoom = nextRoom
-	Look(gs, parser.Command{})
+
+	// CurrentRoom has changed, so Look now gets the new room's description.
+	return Look(gs, parser.Command{})
 }

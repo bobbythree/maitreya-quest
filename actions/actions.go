@@ -6,7 +6,7 @@ import (
 	"github.com/bobbythree/maitreya-quest/parser"
 )
 
-type ActionFunc func(*game.GameState, parser.Command)
+type ActionFunc func(*game.GameState, parser.Command) string
 
 var ActionMap = map[string]ActionFunc{
 	"look":      Look,

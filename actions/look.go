@@ -1,47 +1,49 @@
 package actions
 
 import (
+	"strings"
+
 	"github.com/bobbythree/maitreya-quest/game"
-	"github.com/bobbythree/maitreya-quest/output"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
 
-func Look(gs *game.GameState, cmd parser.Command) {
+func Look(gs *game.GameState, cmd parser.Command) string {
 	room := world.Rooms[gs.CurrentRoom]
 	directObject := cmd.DirectObject
+	result := strings.Builder{}
 
 	if directObject == "" {
-		output.Println(room.Description)
-		return
+		return room.Description
 	}
 
 	obj, ok := world.FindVisibleObject(gs, directObject)
 
 	if !ok {
-		output.Println("You don't see that")
-		return
+		return "You don't see that."
 	}
 
 	if obj.Openable {
 		if obj.Open {
-			output.Println(obj.OpenDescription)
+			result.WriteString(obj.OpenDescription)
 		} else {
-			output.Println(obj.ClosedDescription)
+			result.WriteString(obj.ClosedDescription)
 		}
 	} else {
-		output.Println(obj.Description)
+		result.WriteString(obj.Description)
 	}
 
 	if obj.Container && obj.Open {
 		if len(obj.Contains) > 0 {
-			output.Println("You see:")
+			result.WriteString("\nYou see:")
 			for _, insideID := range obj.Contains {
 				inside := world.Objects[insideID]
-				output.Println("- " + inside.Name)
+				result.WriteString("\n- " + inside.Name)
 			}
 		} else {
-			output.Println("It's empty")
+			result.WriteString("\nIt's empty")
 		}
 	}
+
+	return result.String()
 }
