@@ -85,7 +85,7 @@ var Objects = map[string]Object{
 	"man": {
 		ID:          "man",
 		Name:        "man",
-		Description: "Description of hacker looking dude...",
+		Description: "Wow, this dude looks like a total bad ass.",
 		Talkable:    true,
 		Dialog:      "The prophecy is true...",
 	},

@@ -15,7 +15,7 @@ func Talk(gs *game.GameState, cmd parser.Command) {
 
 	obj, ok := world.FindVisibleObject(gs, cmd.DirectObject)
 	if !ok {
-		output.Printf("You don't see a %s to talk to", obj)
+		output.Printf("You don't see a %v to talk to", obj)
 	}
 
 	if !obj.Talkable {
