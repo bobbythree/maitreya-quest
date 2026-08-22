@@ -33,5 +33,5 @@ func Open(gs *game.GameState, cmd parser.Command) string {
 
 	world.Objects[obj.ID] = obj
 
-	return fmt.Sprintf("You open the %s.\n", obj.Name)
+	return fmt.Sprintf("You open the %s.", obj.Name)
 }

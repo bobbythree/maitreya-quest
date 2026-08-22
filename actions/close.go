@@ -29,5 +29,5 @@ func Close(gs *game.GameState, cmd parser.Command) string {
 
 	world.Objects[obj.ID] = obj
 
-	return fmt.Sprintf("You close the %s.\n", obj.Name)
+	return fmt.Sprintf("You close the %s.", obj.Name)
 }

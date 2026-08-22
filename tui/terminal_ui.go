@@ -62,7 +62,9 @@ func Run(gs *game.GameState) {
 			continue
 		}
 
-		action(gs, cmd)
+		// print result
+		result := action(gs, cmd)
+		output.Println(result)
 	}
 	// error handling for scanner
 	if err := scanner.Err(); err != nil {
