@@ -24,7 +24,7 @@ import (
 type Model struct {
 	gameState *game.GameState
 	input     textinput.Model
-	lastInput string
+	result    string
 }
 
 func (m Model) Init() tea.Cmd {
@@ -48,8 +48,18 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 		if msg.String() == "enter" {
-			m.lastInput = m.input.Value()
+			input := m.input.Value()
+			cmd := parser.Parse(input)
+			action, ok := actions.ActionMap[cmd.Verb]
+			if !ok {
+				m.result = "I don't get it."
+				m.input.SetValue("")
+				return m, nil
+			}
+
+			m.result = action(m.gameState, cmd)
 			m.input.SetValue("")
+
 			return m, nil
 		}
 	}
@@ -61,7 +71,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() tea.View {
-	content := m.lastInput + "\n\n" + m.input.View()
+	content := m.result + "\n\n" + m.input.View()
 	return tea.NewView(content)
 }
 
