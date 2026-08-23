@@ -27,6 +27,8 @@ type Model struct {
 	input     textinput.Model
 	history   []string
 	width     int
+	logo      string
+	intro     string
 }
 
 func (m Model) Init() tea.Cmd {
@@ -34,12 +36,25 @@ func (m Model) Init() tea.Cmd {
 }
 
 func NewModel(gs *game.GameState) Model {
+	intro := "Our story takes place on Earth 100 years in the future and roughly 100 years since humankind achieved AGI (Artificial General Intelligence). As a result of handing nearly all creative and intellectual tasks over to AI long ago, the human mind has atrophied to a critical extent. The majority of humans are either almost too dumb to talk to, or animalistally violent. A prophecy tells of someone called 'Maitreya', who along with the help of an 'other wordly being', will over take the AI and restore humanity to it's former creative and intellectual glory."
+
+	logo, err := figlet.Render(
+		"MAITREYA'S QUEST",
+		figlet.WithFont("smkeyboard"),
+		figlet.WithColors(figlet.ColorCyan),
+	)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	input := textinput.New()
 	input.Focus()
 
 	return Model{
 		gameState: gs,
 		input:     input,
+		logo:      logo,
+		intro:     intro,
 	}
 }
 
@@ -105,7 +120,10 @@ func (m Model) View() tea.View {
 		Padding(0, 4)
 
 	history := strings.Join(m.history, "\n\n")
-	content := history + "\n\n" + m.input.View()
+	content := m.logo + "\n" +
+		m.intro + "\n\n" +
+		history + "\n\n" +
+		m.input.View()
 
 	//return view
 	return tea.NewView(style.Render(content))
