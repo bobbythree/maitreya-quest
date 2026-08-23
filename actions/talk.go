@@ -3,6 +3,7 @@ package actions
 import (
 	"fmt"
 
+	"github.com/bobbythree/maitreya-quest/dialogue"
 	"github.com/bobbythree/maitreya-quest/game"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
@@ -22,5 +23,20 @@ func Talk(gs *game.GameState, cmd parser.Command) string {
 		return "You'll just talk to anything huh? You get no response."
 	}
 
-	return obj.Dialog
+	d, ok := dialogue.Dialogues[obj.DialogueID]
+	if !ok {
+		return "They have nothing to say."
+	}
+
+	node, ok := d.Nodes[d.StartNode]
+	if !ok {
+		return "They have nothing to say."
+	}
+
+	gs.Dialogue = &game.DialogueState{
+		DialogueID: d.ID,
+		NodeID:     d.StartNode,
+	}
+
+	return node.Text
 }

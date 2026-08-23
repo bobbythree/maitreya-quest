@@ -13,7 +13,7 @@ type Object struct {
 	Lockable          bool
 	Locked            bool
 	Talkable          bool
-	Dialog            string
+	DialogueID        string
 	Parent            string
 	Contains          []string
 }
@@ -87,6 +87,6 @@ var Objects = map[string]Object{
 		Name:        "man",
 		Description: "Wow, this dude looks like a total bad ass.",
 		Talkable:    true,
-		Dialog:      "The prophecy is true...",
+		DialogueID:  "street_man",
 	},
 }

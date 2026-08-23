@@ -2,6 +2,7 @@
 package tui
 
 import (
+	"fmt"
 	"log"
 	"strings"
 
@@ -10,6 +11,7 @@ import (
 	"charm.land/lipgloss/v2"
 
 	"github.com/bobbythree/maitreya-quest/actions"
+	"github.com/bobbythree/maitreya-quest/dialogue"
 	"github.com/bobbythree/maitreya-quest/game"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/lsferreira42/figlet-go/figlet"
@@ -18,12 +20,13 @@ import (
 // bubble tea
 
 type Model struct {
-	gameState *game.GameState
-	input     textinput.Model
-	history   []string
-	width     int
-	logo      string
-	intro     string
+	gameState      *game.GameState
+	input          textinput.Model
+	history        []string
+	width          int
+	logo           string
+	intro          string
+	dialogueCursor int
 }
 
 func (m Model) Init() tea.Cmd {
@@ -53,12 +56,87 @@ func NewModel(gs *game.GameState) Model {
 	}
 }
 
+// dialogue helper
+
+func (m Model) dialogueView() string {
+	if m.gameState.Dialogue == nil {
+		return ""
+	}
+
+	state := m.gameState.Dialogue
+
+	d, ok := dialogue.Dialogues[state.DialogueID]
+	if !ok {
+		return ""
+	}
+
+	node, ok := d.Nodes[state.NodeID]
+	if !ok {
+		return ""
+	}
+
+	var result strings.Builder
+	result.WriteString(node.Speaker)
+	result.WriteString(": ")
+	result.WriteString(node.Text)
+
+	for i, choice := range node.Choices {
+		prefix := "  "
+
+		if i == m.dialogueCursor {
+			prefix = "> "
+		}
+
+		fmt.Fprintf(&result, "\n%s%d. %s", prefix, i+1, choice.Text)
+	}
+
+	return result.String()
+}
+
+func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+	state := m.gameState.Dialogue
+
+	d := dialogue.Dialogues[state.DialogueID]
+	node := d.Nodes[state.NodeID]
+
+	switch msg.String() {
+	case "up", "k":
+		if m.dialogueCursor > 0 {
+			m.dialogueCursor--
+		}
+
+	case "down", "j":
+		if m.dialogueCursor < len(node.Choices)-1 {
+			m.dialogueCursor++
+		}
+
+	case "enter":
+		choice := node.Choices[m.dialogueCursor]
+
+		if choice.NextNode == "" {
+			m.gameState.Dialogue = nil
+			m.dialogueCursor = 0
+			return m, nil
+		}
+
+		m.gameState.Dialogue.NodeID = choice.NextNode
+		m.dialogueCursor = 0
+	}
+
+	return m, nil
+}
+
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyPressMsg:
 		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
+
+		if m.gameState.Dialogue != nil {
+			return m.updateDialogue(msg)
+		}
+
 		// player executes command
 		if msg.String() == "enter" {
 			input := m.input.Value()
@@ -115,16 +193,21 @@ func (m Model) View() tea.View {
 		Padding(0, 4)
 
 	history := strings.Join(m.history, "\n\n")
+	bottom := m.input.View()
+
+	if m.gameState.Dialogue != nil {
+		bottom = m.dialogueView()
+	}
+
 	content := m.logo + "\n" +
 		m.intro + "\n\n" +
 		history + "\n\n" +
-		m.input.View()
+		bottom
 
 	//return view
 	return tea.NewView(style.Render(content))
 }
 
-// Run -  new run func
 func Run(gs *game.GameState) {
 	m := NewModel(gs)
 	p := tea.NewProgram(m)
