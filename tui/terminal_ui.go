@@ -9,7 +9,9 @@ import (
 	"strings"
 	"time"
 
+	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
+
 	"github.com/bobbythree/maitreya-quest/actions"
 	"github.com/bobbythree/maitreya-quest/game"
 	"github.com/bobbythree/maitreya-quest/output"
@@ -19,22 +21,61 @@ import (
 
 // bubble tea
 
-type Model struct{}
+type Model struct {
+	gameState *game.GameState
+	input     textinput.Model
+	lastInput string
+}
 
 func (m Model) Init() tea.Cmd {
 	return nil
 }
 
+func NewModel(gs *game.GameState) Model {
+	input := textinput.New()
+	input.Focus()
+
+	return Model{
+		gameState: gs,
+		input:     input,
+	}
+}
+
 func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
-	return m, nil
+	switch msg := msg.(type) {
+	case tea.KeyPressMsg:
+		if msg.String() == "ctrl+c" {
+			return m, tea.Quit
+		}
+		if msg.String() == "enter" {
+			m.lastInput = m.input.Value()
+			m.input.SetValue("")
+			return m, nil
+		}
+	}
+
+	var cmd tea.Cmd
+	m.input, cmd = m.input.Update(msg)
+
+	return m, cmd
 }
 
 func (m Model) View() tea.View {
-	return tea.NewView("Hello from Bubble Tea")
+	content := m.lastInput + "\n\n" + m.input.View()
+	return tea.NewView(content)
 }
 
-// Run function
+// Run -  new run func
 func Run(gs *game.GameState) {
+	m := NewModel(gs)
+	p := tea.NewProgram(m)
+	if _, err := p.Run(); err != nil {
+		log.Fatal(err)
+	}
+}
+
+// OldRun function
+func OldRun(gs *game.GameState) {
 	fmt.Print("\033[H\033[2J")
 	scanner := bufio.NewScanner(os.Stdin)
 
