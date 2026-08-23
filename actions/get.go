@@ -15,6 +15,10 @@ func Get(gs *game.GameState, cmd parser.Command) string {
 		return "You don't see that."
 	}
 
+	if obj.Parent == "inventory" {
+		return "You already have it."
+	}
+
 	if !obj.Portable {
 		return "You can't take that."
 	}
