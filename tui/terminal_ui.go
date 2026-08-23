@@ -9,6 +9,7 @@ import (
 	"strings"
 	"time"
 
+	tea "charm.land/bubbletea/v2"
 	"github.com/bobbythree/maitreya-quest/actions"
 	"github.com/bobbythree/maitreya-quest/game"
 	"github.com/bobbythree/maitreya-quest/output"
@@ -16,6 +17,23 @@ import (
 	"github.com/lsferreira42/figlet-go/figlet"
 )
 
+// bubble tea
+
+type Model struct{}
+
+func (m Model) Init() tea.Cmd {
+	return nil
+}
+
+func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
+
+func (m Model) View() tea.View {
+	return tea.NewView("Hello from Bubble Tea")
+}
+
+// Run function
 func Run(gs *game.GameState) {
 	fmt.Print("\033[H\033[2J")
 	scanner := bufio.NewScanner(os.Stdin)
