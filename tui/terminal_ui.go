@@ -11,6 +11,7 @@ import (
 
 	"charm.land/bubbles/v2/textinput"
 	tea "charm.land/bubbletea/v2"
+	"charm.land/lipgloss/v2"
 
 	"github.com/bobbythree/maitreya-quest/actions"
 	"github.com/bobbythree/maitreya-quest/game"
@@ -25,6 +26,7 @@ type Model struct {
 	gameState *game.GameState
 	input     textinput.Model
 	history   []string
+	width     int
 }
 
 func (m Model) Init() tea.Cmd {
@@ -59,20 +61,25 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			action, ok := actions.ActionMap[cmd.Verb]
 
 			if !ok {
-				m.history = append(m.history, "> "+input)
-				m.history = append(m.history, "I don't get it.")
+				entry := "> " + input + "\nI don't get it."
+				m.history = append(m.history, entry)
 				m.input.SetValue("")
+
 				return m, nil
 			}
 
 			result := action(m.gameState, cmd)
 
-			m.history = append(m.history, "> "+input)
-			m.history = append(m.history, result)
+			entry := "> " + input + "\n" + result
+			m.history = append(m.history, entry)
 			m.input.SetValue("")
 
 			return m, nil
 		}
+
+	// term resize
+	case tea.WindowSizeMsg:
+		m.width = msg.Width
 	}
 
 	var cmd tea.Cmd
@@ -82,9 +89,26 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() tea.View {
-	history := strings.Join(m.history, "\n")
+	// tui sizing
+	contentWidth := 80
+
+	if m.width > 0 && m.width-8 < contentWidth {
+		contentWidth = m.width - 8
+	}
+
+	if contentWidth < 1 {
+		contentWidth = 1
+	}
+
+	style := lipgloss.NewStyle().
+		Width(contentWidth).
+		Padding(0, 4)
+
+	history := strings.Join(m.history, "\n\n")
 	content := history + "\n\n" + m.input.View()
-	return tea.NewView(content)
+
+	//return view
+	return tea.NewView(style.Render(content))
 }
 
 // Run -  new run func
