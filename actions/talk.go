@@ -28,15 +28,10 @@ func Talk(gs *game.GameState, cmd parser.Command) string {
 		return "They have nothing to say."
 	}
 
-	node, ok := d.Nodes[d.StartNode]
-	if !ok {
-		return "They have nothing to say."
-	}
-
 	gs.Dialogue = &game.DialogueState{
 		DialogueID: d.ID,
 		NodeID:     d.StartNode,
 	}
 
-	return node.Text
+	return ""
 }

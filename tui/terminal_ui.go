@@ -75,22 +75,48 @@ func (m Model) dialogueView() string {
 		return ""
 	}
 
+	portrait := `
+      _______
+    /  ~   ~  \
+    |  o   o  |
+    |    >    |
+    |  _____  |
+     \_______/
+`
+
+	speakerStyle := lipgloss.NewStyle().
+		Bold(true)
+
+	selectedStyle := lipgloss.NewStyle().
+		Bold(true)
+
+	dialogueStyle := lipgloss.NewStyle().
+		Border(lipgloss.RoundedBorder()).
+		Padding(1, 2)
+
 	var result strings.Builder
-	result.WriteString(node.Speaker)
-	result.WriteString(": ")
+
+	result.WriteString(portrait)
+	result.WriteString("\n")
+	result.WriteString(speakerStyle.Render(node.Speaker))
+	result.WriteString("\n\n")
 	result.WriteString(node.Text)
+	result.WriteString("\n")
 
 	for i, choice := range node.Choices {
-		prefix := "  "
+		choiceText := fmt.Sprintf("%d. %s", i+1, choice.Text)
 
 		if i == m.dialogueCursor {
-			prefix = "> "
+			choiceText = selectedStyle.Render("> " + choiceText)
+		} else {
+			choiceText = "  " + choiceText
 		}
 
-		fmt.Fprintf(&result, "\n%s%d. %s", prefix, i+1, choice.Text)
+		result.WriteString("\n")
+		result.WriteString(choiceText)
 	}
 
-	return result.String()
+	return dialogueStyle.Render(result.String())
 }
 
 func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
@@ -157,9 +183,13 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			}
 
 			result := action(m.gameState, cmd)
+			entry := "> " + input
+			if result != "" {
+				entry += "\n" + result
+			}
 
-			entry := "> " + input + "\n" + result
 			m.history = append(m.history, entry)
+
 			m.input.SetValue("")
 
 			return m, nil
