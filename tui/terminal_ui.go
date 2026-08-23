@@ -24,7 +24,7 @@ import (
 type Model struct {
 	gameState *game.GameState
 	input     textinput.Model
-	result    string
+	history   []string
 }
 
 func (m Model) Init() tea.Cmd {
@@ -47,17 +47,28 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if msg.String() == "ctrl+c" {
 			return m, tea.Quit
 		}
+		// player executes command
 		if msg.String() == "enter" {
 			input := m.input.Value()
+			// handle empty command
+			if strings.TrimSpace(input) == "" {
+				return m, nil
+			}
+
 			cmd := parser.Parse(input)
 			action, ok := actions.ActionMap[cmd.Verb]
+
 			if !ok {
-				m.result = "I don't get it."
+				m.history = append(m.history, "> "+input)
+				m.history = append(m.history, "I don't get it.")
 				m.input.SetValue("")
 				return m, nil
 			}
 
-			m.result = action(m.gameState, cmd)
+			result := action(m.gameState, cmd)
+
+			m.history = append(m.history, "> "+input)
+			m.history = append(m.history, result)
 			m.input.SetValue("")
 
 			return m, nil
@@ -71,7 +82,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m Model) View() tea.View {
-	content := m.result + "\n\n" + m.input.View()
+	history := strings.Join(m.history, "\n")
+	content := history + "\n\n" + m.input.View()
 	return tea.NewView(content)
 }
 
