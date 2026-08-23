@@ -9,7 +9,7 @@ func findObjectRecursive(obj Object, target string) (Object, bool) {
 
 		child := Objects[childID]
 
-		if child.ID == target {
+		if child.Name == target {
 			return child, true
 		}
 
@@ -39,7 +39,7 @@ func FindVisibleObject(gs *game.GameState, target string) (Object, bool) {
 
 		obj := Objects[objID]
 
-		if obj.ID == target {
+		if obj.Name == target {
 			return obj, true
 		}
 
@@ -61,7 +61,7 @@ func FindVisibleObject(gs *game.GameState, target string) (Object, bool) {
 
 		obj := Objects[objID]
 
-		if obj.ID == target {
+		if obj.Name == target {
 			return obj, true
 		}
 	}

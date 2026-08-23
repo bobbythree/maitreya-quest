@@ -82,8 +82,8 @@ var Objects = map[string]Object{
 		Parent:      "drawer",
 		Portable:    true,
 	},
-	"man": {
-		ID:          "man",
+	"street_man": {
+		ID:          "street_man",
 		Name:        "man",
 		Description: "Wow, this dude looks like a total bad ass.",
 		Talkable:    true,
