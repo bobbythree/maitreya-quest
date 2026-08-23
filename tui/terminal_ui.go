@@ -91,6 +91,7 @@ func (m Model) dialogueView() string {
 		Bold(true)
 
 	dialogueStyle := lipgloss.NewStyle().
+		Width(64).
 		Border(lipgloss.RoundedBorder()).
 		Padding(1, 2)
 
