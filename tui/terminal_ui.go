@@ -141,6 +141,16 @@ func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		choice := node.Choices[m.dialogueCursor]
 
 		if choice.NextNode == "" {
+			if game.HasCompletedSilasIntroduction(m.gameState) &&
+				!m.gameState.Flags["unlock_work"] {
+
+				narration := game.ApplyEffect(m.gameState, "unlock_work")
+
+				if narration != "" {
+					m.history = append(m.history, narration)
+				}
+			}
+
 			m.gameState.Dialogue = nil
 			m.dialogueCursor = 0
 			return m, nil
@@ -148,6 +158,12 @@ func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 		m.gameState.Dialogue.NodeID = choice.NextNode
 		m.dialogueCursor = 0
+
+		game.MarkDialogueNodeVisited(
+			m.gameState,
+			m.gameState.Dialogue.DialogueID,
+			choice.NextNode,
+		)
 	}
 
 	return m, nil

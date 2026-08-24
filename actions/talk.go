@@ -33,5 +33,8 @@ func Talk(gs *game.GameState, cmd parser.Command) string {
 		NodeID:     d.StartNode,
 	}
 
+	// mark nodes as visited
+	game.MarkDialogueNodeVisited(gs, d.ID, d.StartNode)
+
 	return ""
 }

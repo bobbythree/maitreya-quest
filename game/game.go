@@ -6,5 +6,7 @@ func NewGame() *GameState {
 		Player: Player{
 			Inventory: []string{},
 		},
+		Flags:                make(map[string]bool),
+		VisitedDialogueNodes: make(map[string]map[string]bool),
 	}
 }
