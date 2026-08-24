@@ -4,6 +4,14 @@ var Dialogues = map[string]Dialogue{
 	"street_man": {
 		ID:        "street_man",
 		StartNode: "prophecy",
+		Completion: &Completion{
+			RequiredNodes: []string{
+				"explanation",
+				"maitreya",
+				"otherworldly",
+			},
+			OnComplete: unlockWork,
+		},
 		Nodes: map[string]Node{
 			"prophecy": {
 				Speaker: "Man",

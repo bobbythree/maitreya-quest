@@ -59,18 +59,7 @@ func NewModel(gs *game.GameState) Model {
 // dialogue helper
 
 func (m Model) dialogueView() string {
-	if m.gameState.Dialogue == nil {
-		return ""
-	}
-
-	state := m.gameState.Dialogue
-
-	d, ok := dialogue.Dialogues[state.DialogueID]
-	if !ok {
-		return ""
-	}
-
-	node, ok := d.Nodes[state.NodeID]
+	node, ok := dialogue.CurrentNode(m.gameState)
 	if !ok {
 		return ""
 	}
@@ -121,10 +110,10 @@ func (m Model) dialogueView() string {
 }
 
 func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
-	state := m.gameState.Dialogue
-
-	d := dialogue.Dialogues[state.DialogueID]
-	node := d.Nodes[state.NodeID]
+	node, ok := dialogue.CurrentNode(m.gameState)
+	if !ok {
+		return m, nil
+	}
 
 	switch msg.String() {
 	case "up", "k":
@@ -138,32 +127,21 @@ func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		}
 
 	case "enter":
-		choice := node.Choices[m.dialogueCursor]
-
-		if choice.NextNode == "" {
-			if game.HasCompletedSilasIntroduction(m.gameState) &&
-				!m.gameState.Flags["unlock_work"] {
-
-				narration := game.ApplyEffect(m.gameState, "unlock_work")
-
-				if narration != "" {
-					m.history = append(m.history, narration)
-				}
-			}
-
-			m.gameState.Dialogue = nil
-			m.dialogueCursor = 0
+		outcome, err := dialogue.SelectChoice(
+			m.gameState,
+			m.dialogueCursor,
+		)
+		if err != nil {
 			return m, nil
 		}
 
-		m.gameState.Dialogue.NodeID = choice.NextNode
-		m.dialogueCursor = 0
+		if outcome.Narration != "" {
+			m.history = append(m.history, outcome.Narration)
+		}
 
-		game.MarkDialogueNodeVisited(
-			m.gameState,
-			m.gameState.Dialogue.DialogueID,
-			choice.NextNode,
-		)
+		if outcome.Ended {
+			m.dialogueCursor = 0
+		}
 	}
 
 	return m, nil

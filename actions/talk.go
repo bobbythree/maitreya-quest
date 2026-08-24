@@ -23,18 +23,9 @@ func Talk(gs *game.GameState, cmd parser.Command) string {
 		return "You'll just talk to anything huh? You get no response."
 	}
 
-	d, ok := dialogue.Dialogues[obj.DialogueID]
-	if !ok {
+	if err := dialogue.Start(gs, obj.DialogueID); err != nil {
 		return "They have nothing to say."
 	}
-
-	gs.Dialogue = &game.DialogueState{
-		DialogueID: d.ID,
-		NodeID:     d.StartNode,
-	}
-
-	// mark nodes as visited
-	game.MarkDialogueNodeVisited(gs, d.ID, d.StartNode)
 
 	return ""
 }
