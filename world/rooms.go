@@ -44,6 +44,7 @@ var Rooms = map[string]Room{
 		},
 		Exits: map[string]string{
 			"west": "hallway",
+			"work": "work_main",
 		},
 	},
 	"work_main": {

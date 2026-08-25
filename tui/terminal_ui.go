@@ -235,7 +235,7 @@ func (m Model) View() tea.View {
 
 	style := lipgloss.NewStyle().
 		Width(contentWidth).
-		Padding(0, 4)
+		Padding(2, 4)
 
 	history := strings.Join(m.history, "\n\n")
 	bottom := m.input.View()
@@ -261,8 +261,11 @@ func (m Model) View() tea.View {
 
 	content += bottom
 
-	//return view
-	return tea.NewView(style.Render(content))
+	// return view
+	view := tea.NewView(style.Render(content))
+	view.AltScreen = true
+
+	return view
 }
 
 func Run(gs *game.GameState) {
