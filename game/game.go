@@ -7,6 +7,7 @@ func NewGame() *GameState {
 			Inventory: []string{},
 		},
 		Flags:            make(map[string]bool),
+		VisitedRooms:     make(map[string]bool),
 		DialogueProgress: make(map[string]*DialogueProgress),
 	}
 }

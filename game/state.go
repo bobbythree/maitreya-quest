@@ -5,6 +5,7 @@ type GameState struct {
 	Player           Player
 	Dialogue         *DialogueState
 	Flags            map[string]bool
+	VisitedRooms     map[string]bool
 	DialogueProgress map[string]*DialogueProgress
 }
 

@@ -14,6 +14,7 @@ import (
 	"github.com/bobbythree/maitreya-quest/dialogue"
 	"github.com/bobbythree/maitreya-quest/game"
 	"github.com/bobbythree/maitreya-quest/parser"
+	"github.com/bobbythree/maitreya-quest/world"
 	"github.com/lsferreira42/figlet-go/figlet"
 )
 
@@ -26,6 +27,7 @@ type Model struct {
 	width          int
 	logo           string
 	intro          string
+	showIntro      bool
 	dialogueCursor int
 }
 
@@ -48,11 +50,22 @@ func NewModel(gs *game.GameState) Model {
 	input := textinput.New()
 	input.Focus()
 
+	room := world.Rooms[gs.CurrentRoom]
+
+	initialText := room.Description
+	if room.FirstVisitNarration != "" {
+		initialText = room.FirstVisitNarration + "\n\n" + room.Description
+	}
+
+	gs.VisitedRooms[gs.CurrentRoom] = true
+
 	return Model{
 		gameState: gs,
+		history:   []string{initialText},
 		input:     input,
 		logo:      logo,
 		intro:     intro,
+		showIntro: true,
 	}
 }
 
@@ -177,14 +190,21 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 				return m, nil
 			}
 
+			previousRoom := m.gameState.CurrentRoom
 			result := action(m.gameState, cmd)
+			roomChanged := previousRoom != m.gameState.CurrentRoom
+
 			entry := "> " + input
 			if result != "" {
 				entry += "\n" + result
 			}
 
-			m.history = append(m.history, entry)
-
+			if roomChanged {
+				m.history = []string{result}
+				m.showIntro = false
+			} else {
+				m.history = append(m.history, entry)
+			}
 			m.input.SetValue("")
 
 			return m, nil
@@ -224,10 +244,22 @@ func (m Model) View() tea.View {
 		bottom = m.dialogueView()
 	}
 
-	content := m.logo + "\n" +
-		m.intro + "\n\n" +
-		history + "\n\n" +
-		bottom
+	room := world.Rooms[m.gameState.CurrentRoom]
+	roomName := strings.ToUpper(room.Name)
+
+	content := ""
+
+	if m.showIntro {
+		content += m.logo + "\n" +
+			m.intro + "\n\n"
+	}
+
+	content += roomName + "\n\n"
+	if history != "" {
+		content += history + "\n\n"
+	}
+
+	content += bottom
 
 	//return view
 	return tea.NewView(style.Render(content))

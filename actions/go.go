@@ -16,7 +16,17 @@ func Go(gs *game.GameState, cmd parser.Command) string {
 	}
 
 	gs.CurrentRoom = nextRoom
+	next := world.Rooms[nextRoom]
 
-	// CurrentRoom has changed, so Look now gets the new room's description.
-	return Look(gs, parser.Command{})
+	if !gs.VisitedRooms[nextRoom] {
+		gs.VisitedRooms[nextRoom] = true
+
+		if next.FirstVisitNarration != "" {
+			return next.FirstVisitNarration + "\n\n" + next.Description
+		}
+
+		return next.Description
+	}
+
+	return ""
 }
