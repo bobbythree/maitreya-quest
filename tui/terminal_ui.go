@@ -255,6 +255,7 @@ func (m Model) View() tea.View {
 	}
 
 	content += roomName + "\n\n"
+
 	if history != "" {
 		content += history + "\n\n"
 	}
@@ -262,13 +263,12 @@ func (m Model) View() tea.View {
 	content += bottom
 
 	// return view
-	view := tea.NewView(style.Render(content))
-	view.AltScreen = true
-
-	return view
+	return tea.NewView(style.Render(content))
 }
 
 func Run(gs *game.GameState) {
+	// clear screen
+	fmt.Print("\033[2J\033[H")
 	m := NewModel(gs)
 	p := tea.NewProgram(m)
 	if _, err := p.Run(); err != nil {
