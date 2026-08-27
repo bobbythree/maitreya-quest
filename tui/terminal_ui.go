@@ -152,11 +152,8 @@ func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.history = append(m.history, outcome.Narration)
 		}
 
-		if outcome.Ended {
-			m.dialogueCursor = 0
-		}
+		m.dialogueCursor = 0
 	}
-
 	return m, nil
 }
 
