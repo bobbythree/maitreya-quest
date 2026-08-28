@@ -6,9 +6,16 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+
 	"github.com/bobbythree/maitreya-quest/dialogue"
 )
 
+// dialogueUIState holds dialogue-specific TUI state.
+type dialogueUIState struct {
+	cursor int
+}
+
+// dialogueView renders the active dialogue.
 func (m Model) dialogueView() string {
 	node, ok := dialogue.CurrentNode(m.gameState)
 	if !ok {
@@ -47,7 +54,7 @@ func (m Model) dialogueView() string {
 	for i, choice := range node.Choices {
 		choiceText := fmt.Sprintf("%d. %s", i+1, choice.Text)
 
-		if i == m.dialogueCursor {
+		if i == m.dialogueUI.cursor {
 			choiceText = selectedStyle.Render("> " + choiceText)
 		} else {
 			choiceText = "  " + choiceText
@@ -60,6 +67,7 @@ func (m Model) dialogueView() string {
 	return dialogueStyle.Render(result.String())
 }
 
+// updateDialogue handles input while dialogue is active.
 func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	node, ok := dialogue.CurrentNode(m.gameState)
 	if !ok {
@@ -68,19 +76,19 @@ func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 	switch msg.String() {
 	case "up", "k":
-		if m.dialogueCursor > 0 {
-			m.dialogueCursor--
+		if m.dialogueUI.cursor > 0 {
+			m.dialogueUI.cursor--
 		}
 
 	case "down", "j":
-		if m.dialogueCursor < len(node.Choices)-1 {
-			m.dialogueCursor++
+		if m.dialogueUI.cursor < len(node.Choices)-1 {
+			m.dialogueUI.cursor++
 		}
 
 	case "enter":
 		outcome, err := dialogue.SelectChoice(
 			m.gameState,
-			m.dialogueCursor,
+			m.dialogueUI.cursor,
 		)
 		if err != nil {
 			return m, nil
@@ -90,7 +98,9 @@ func (m Model) updateDialogue(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			m.history = append(m.history, outcome.Narration)
 		}
 
-		m.dialogueCursor = 0
+		// reset selection for the next dialogue node
+		m.dialogueUI.cursor = 0
 	}
+
 	return m, nil
 }

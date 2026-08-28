@@ -20,6 +20,4 @@ type DialogueProgress struct {
 	Completed    bool
 }
 
-type WorkComputerState struct {
-	Cursor int
-}
+type WorkComputerState struct{}

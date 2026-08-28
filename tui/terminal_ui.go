@@ -17,14 +17,17 @@ import (
 
 // Model holds the main TUI state.
 type Model struct {
-	gameState      *game.GameState
-	input          textinput.Model
-	history        []string
-	width          int
-	logo           string
-	intro          string
-	showIntro      bool
-	dialogueCursor int
+	gameState *game.GameState
+	input     textinput.Model
+	history   []string
+	width     int
+	logo      string
+	intro     string
+	showIntro bool
+
+	// interaction-specific TUI state
+	dialogueUI     dialogueUIState
+	workComputerUI workComputerUIState
 }
 
 func (m Model) Init() tea.Cmd {
