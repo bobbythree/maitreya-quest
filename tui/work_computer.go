@@ -20,9 +20,8 @@ func (m Model) workComputerView() string {
 		Bold(true)
 
 	choices := []string{
-		"Scan facility rooms",
-		"View system status",
-		"Log out",
+		"Scan facility",
+		"Exit",
 	}
 
 	var screen strings.Builder
