@@ -241,6 +241,10 @@ func (m Model) View() tea.View {
 		bottom = m.dialogueView()
 	}
 
+	if m.gameState.WorkComputer != nil {
+		bottom = "WORK COMPUTER ACTIVATED!"
+	}
+
 	room := world.Rooms[m.gameState.CurrentRoom]
 	roomName := strings.ToUpper(room.Name)
 
