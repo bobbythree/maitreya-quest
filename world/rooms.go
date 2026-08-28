@@ -59,4 +59,15 @@ var Rooms = map[string]Room{
 			"west": "work_breakroom",
 		},
 	},
+	"work_breakroom": {
+		ID:          "work_main",
+		Name:        "Break Room",
+		Description: "A small breakroom.",
+		Objects: []string{
+			"work_computer",
+		},
+		Exits: map[string]string{
+			"east": "work_main",
+		},
+	},
 }

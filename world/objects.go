@@ -89,4 +89,9 @@ var Objects = map[string]Object{
 		Talkable:    true,
 		DialogueID:  "street_man",
 	},
+	"work_computer": {
+		ID:          "work_computer",
+		Name:        "computer",
+		Description: "Your work machine.",
+	},
 }
