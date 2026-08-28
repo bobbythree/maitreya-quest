@@ -79,6 +79,10 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateDialogue(msg)
 		}
 
+		if m.gameState.WorkComputer != nil {
+			return m.updateWorkComputer(msg)
+		}
+
 		// player executes command
 		if msg.String() == "enter" {
 			input := m.input.Value()
