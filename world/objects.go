@@ -1,5 +1,7 @@
 package world
 
+import "github.com/bobbythree/maitreya-quest/game"
+
 type Object struct {
 	ID                string
 	Name              string
@@ -16,6 +18,7 @@ type Object struct {
 	DialogueID        string
 	Parent            string
 	Contains          []string
+	UseAction         func(*game.GameState) string
 }
 
 var Objects = map[string]Object{
