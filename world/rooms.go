@@ -16,7 +16,7 @@ var Rooms = map[string]Room{
 		Description: "You are in your small studio apartment which is dimly lit only by artificial light coming in though the window. In the room is your bed, your computer which sits on a desk, one window and a door to the east.",
 		Objects: []string{
 			"desk",
-			"computer",
+			"home_computer",
 			"window",
 			"door",
 			"bed",
