@@ -63,6 +63,16 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		if m.workComputerUI.cursor < 1 {
 			m.workComputerUI.cursor++
 		}
+	case "enter":
+		switch m.workComputerUI.cursor {
+		case 0:
+			// scan facility
+			return m, nil
+		case 1:
+			// exit
+			m.gameState.WorkComputer = nil
+			m.workComputerUI.cursor = 0
+		}
 	}
 
 	return m, nil
