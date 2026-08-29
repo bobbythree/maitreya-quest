@@ -2,6 +2,7 @@ package tui
 
 import (
 	"strings"
+	"time"
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
@@ -10,6 +11,35 @@ import (
 // workComputerUIState holds work computer-specific TUI state.
 type workComputerUIState struct {
 	cursor int
+}
+
+// scanStepMsg advances the facility scan.
+type scanStepMsg struct{}
+
+// nextScanStep waits before advancing the scan.
+func nextScanStep() tea.Cmd {
+	return tea.Tick(1500*time.Millisecond, func(time.Time) tea.Msg {
+		return scanStepMsg{}
+	})
+}
+
+// updateWorkComputerScan advances the facility scan.
+func (m Model) updateWorkComputerScan() (tea.Model, tea.Cmd) {
+	// ignore scan messages if the computer is no longer active
+	if m.gameState.WorkComputer == nil {
+		return m, nil
+	}
+
+	m.gameState.WorkComputer.ScanStep++
+
+	// continue scan until the fault is reached
+	if m.gameState.WorkComputer.ScanStep < 4 {
+		return m, nextScanStep()
+	}
+
+	m.gameState.WorkComputer.Screen = "fault"
+
+	return m, nil
 }
 
 // workComputerView renders the work computer interface.
@@ -35,7 +65,18 @@ func (m Model) workComputerView() string {
 		screen.WriteString(m.workComputerMenu())
 
 	case "scanning":
-		screen.WriteString("SCANNING FACILITY...")
+		switch m.gameState.WorkComputer.ScanStep {
+		case 0:
+			screen.WriteString("SCANNING FACILITY...")
+		case 1:
+			screen.WriteString("Checking secrity system status...")
+		case 2:
+			screen.WriteString("Checking access controls...")
+		case 3:
+			screen.WriteString("Checking door sensors...")
+		}
+	case "fault":
+		screen.WriteString("SENSOR FAULT")
 	}
 
 	return computerStyle.Render(screen.String())
@@ -84,6 +125,9 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		case 0:
 			// start facility scan
 			m.gameState.WorkComputer.Screen = "scanning"
+			m.gameState.WorkComputer.ScanStep = 0
+
+			return m, nextScanStep()
 		case 1:
 			// exit
 			m.gameState.WorkComputer = nil

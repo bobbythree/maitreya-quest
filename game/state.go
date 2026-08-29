@@ -21,5 +21,6 @@ type DialogueProgress struct {
 }
 
 type WorkComputerState struct {
-	Screen string
+	Screen   string
+	ScanStep int
 }
