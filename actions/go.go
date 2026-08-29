@@ -15,6 +15,12 @@ func Go(gs *game.GameState, cmd parser.Command) string {
 		return "You can't go that way"
 	}
 
+	// block access to the building until the security door is unlocked
+	// TODO: get rid of this harcoded value later.
+	if gs.CurrentRoom == "work_main" && direction == "north" && !gs.Flags["security_door_unlocked"] {
+		return "The security door is locked."
+	}
+
 	gs.CurrentRoom = nextRoom
 	next := world.Rooms[nextRoom]
 

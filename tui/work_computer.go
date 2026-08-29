@@ -77,6 +77,28 @@ func (m Model) workComputerView() string {
 		}
 	case "fault":
 		screen.WriteString("SENSOR FAULT")
+		screen.WriteString("\n\n\n")
+		screen.WriteString("[1] View fault details")
+
+	case "fault_details":
+		screen.WriteString("SENSOR FAULT")
+		screen.WriteString("\n\n")
+		screen.WriteString("Room: 108")
+		screen.WriteString("\n")
+		screen.WriteString("Sensor: Motion")
+		screen.WriteString("\n")
+		screen.WriteString("Status: No Response")
+		screen.WriteString("\n\n")
+		screen.WriteString("[1] Unlock security door")
+		screen.WriteString("\n")
+		screen.WriteString("[2] Exit")
+
+	case "unlocked":
+		screen.WriteString("SECURITY DOOR UNLOCKED")
+		screen.WriteString("\n\n")
+		screen.WriteString("Access authorized for Room 108 investigation.")
+		screen.WriteString("\n\n")
+		screen.WriteString("[Enter] Exit")
 	}
 
 	return computerStyle.Render(screen.String())
@@ -110,6 +132,40 @@ func (m Model) workComputerMenu() string {
 
 // updateWorkComputer handles input while the work computer is active.
 func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+	// exit after unlocking the security door
+	if m.gameState.WorkComputer.Screen == "unlocked" {
+		if msg.String() == "enter" {
+			m.gameState.WorkComputer = nil
+			m.workComputerUI.cursor = 0
+			m.history = append(m.history, "The security door to the [north] is now open.")
+		}
+
+		return m, nil
+	}
+
+	// show fault details
+	if m.gameState.WorkComputer.Screen == "fault" {
+		if msg.String() == "1" {
+			m.gameState.WorkComputer.Screen = "fault_details"
+		}
+
+		return m, nil
+	}
+
+	// handle fault detail choices
+	if m.gameState.WorkComputer.Screen == "fault_details" {
+		if msg.String() == "1" {
+			m.gameState.Flags["security_door_unlocked"] = true
+			m.gameState.WorkComputer.Screen = "unlocked"
+		}
+		if msg.String() == "2" {
+			m.gameState.WorkComputer = nil
+			m.workComputerUI.cursor = 0
+		}
+
+		return m, nil
+	}
+
 	switch msg.String() {
 	case "up", "k":
 		if m.workComputerUI.cursor > 0 {

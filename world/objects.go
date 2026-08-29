@@ -101,4 +101,9 @@ var Objects = map[string]Object{
 		Description: "Your work machine.",
 		UseAction:   workcomputer.Start,
 	},
+	"security_door": {
+		ID:     "security_door",
+		Name:   "door",
+		Locked: true,
+	},
 }
