@@ -20,4 +20,6 @@ type DialogueProgress struct {
 	Completed    bool
 }
 
-type WorkComputerState struct{}
+type WorkComputerState struct {
+	Screen string
+}

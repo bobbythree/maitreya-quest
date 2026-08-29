@@ -22,6 +22,27 @@ func (m Model) workComputerView() string {
 	titleStyle := lipgloss.NewStyle().
 		Bold(true)
 
+	var screen strings.Builder
+
+	screen.WriteString(titleStyle.Render("LEARNEX FACILITY SECURITY SYSTEM"))
+	screen.WriteString("\n")
+	screen.WriteString("SYSTEM STATUS: ONLINE")
+	screen.WriteString("\n\n")
+
+	// render current computer screen
+	switch m.gameState.WorkComputer.Screen {
+	case "menu":
+		screen.WriteString(m.workComputerMenu())
+
+	case "scanning":
+		screen.WriteString("SCANNING FACILITY...")
+	}
+
+	return computerStyle.Render(screen.String())
+}
+
+// workComputerMenu renders the main computer menu.
+func (m Model) workComputerMenu() string {
 	selectedStyle := lipgloss.NewStyle().
 		Bold(true)
 
@@ -30,25 +51,20 @@ func (m Model) workComputerView() string {
 		"Exit",
 	}
 
-	var screen strings.Builder
-
-	screen.WriteString(titleStyle.Render("LEARNEX FACILITY SECURITY SYSTEM"))
-	screen.WriteString("\n")
-	screen.WriteString("SYSTEM STATUS: ONLINE")
-	screen.WriteString("\n\n")
+	var menu strings.Builder
 
 	for i, choice := range choices {
 		if i == m.workComputerUI.cursor {
-			screen.WriteString(selectedStyle.Render("> " + choice))
+			menu.WriteString(selectedStyle.Render("> " + choice))
 		} else {
-			screen.WriteString("  ")
-			screen.WriteString(choice)
+			menu.WriteString("  ")
+			menu.WriteString(choice)
 		}
 
-		screen.WriteString("\n")
+		menu.WriteString("\n")
 	}
 
-	return computerStyle.Render(screen.String())
+	return menu.String()
 }
 
 // updateWorkComputer handles input while the work computer is active.
@@ -66,8 +82,8 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	case "enter":
 		switch m.workComputerUI.cursor {
 		case 0:
-			// scan facility
-			return m, nil
+			// start facility scan
+			m.gameState.WorkComputer.Screen = "scanning"
 		case 1:
 			// exit
 			m.gameState.WorkComputer = nil
