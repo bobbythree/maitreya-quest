@@ -81,24 +81,23 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 
-		// route dialogue input
-		if m.gameState.Dialogue != nil {
+		// route input to the single active interaction
+		switch m.gameState.InteractionKind() {
+		case game.InteractionDialogue:
 			return m.updateDialogue(msg)
-		}
-
-		// route work computer input
-		if m.gameState.WorkComputer != nil {
+		case game.InteractionWorkComputer:
 			return m.updateWorkComputer(msg)
+		case game.InteractionNone:
+			return m.updatePrompt(msg)
 		}
 
-		// route normal prompt input
-		return m.updatePrompt(msg)
+		return m, nil
 
 	case tea.WindowSizeMsg:
 		m.width = msg.Width
 
 	case scanStepMsg:
-		return m.updateWorkComputerScan()
+		return m.updateWorkComputerScan(msg)
 	}
 
 	return m, nil
@@ -125,11 +124,10 @@ func (m Model) View() tea.View {
 	history := strings.Join(m.history, "\n\n")
 	bottom := m.input.View()
 
-	if m.gameState.Dialogue != nil {
+	switch m.gameState.InteractionKind() {
+	case game.InteractionDialogue:
 		bottom = m.dialogueView()
-	}
-
-	if m.gameState.WorkComputer != nil {
+	case game.InteractionWorkComputer:
 		bottom = m.workComputerView()
 	}
 

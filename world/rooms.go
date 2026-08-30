@@ -61,7 +61,7 @@ var Rooms = map[string]Room{
 		},
 	},
 	"work_breakroom": {
-		ID:          "work_main",
+		ID:          "work_breakroom",
 		Name:        "Break Room",
 		Description: "A small breakroom.",
 		Objects: []string{

@@ -16,6 +16,13 @@ func Start(gs *game.GameState, dialogueID string) error {
 		return fmt.Errorf("dialogue start node %q not found", d.StartNode)
 	}
 
+	if !gs.BeginDialogue(game.DialogueState{
+		DialogueID: dialogueID,
+		NodeID:     d.StartNode,
+	}) {
+		return fmt.Errorf("cannot start dialogue while another interaction is active")
+	}
+
 	if gs.DialogueProgress == nil {
 		gs.DialogueProgress = make(map[string]*game.DialogueProgress)
 	}
@@ -30,27 +37,23 @@ func Start(gs *game.GameState, dialogueID string) error {
 		gs.DialogueProgress[dialogueID].VisitedNodes = make(map[string]bool)
 	}
 
-	gs.Dialogue = &game.DialogueState{
-		DialogueID: dialogueID,
-		NodeID:     d.StartNode,
-	}
-
 	gs.DialogueProgress[dialogueID].VisitedNodes[d.StartNode] = true
 
 	return nil
 }
 
 func CurrentNode(gs *game.GameState) (Node, bool) {
-	if gs.Dialogue == nil {
-		return Node{}, false
-	}
-
-	d, ok := Dialogues[gs.Dialogue.DialogueID]
+	state, ok := gs.ActiveDialogue()
 	if !ok {
 		return Node{}, false
 	}
 
-	node, ok := d.Nodes[gs.Dialogue.NodeID]
+	d, ok := Dialogues[state.DialogueID]
+	if !ok {
+		return Node{}, false
+	}
+
+	node, ok := d.Nodes[state.NodeID]
 	if !ok {
 		return Node{}, false
 	}
@@ -59,20 +62,21 @@ func CurrentNode(gs *game.GameState) (Node, bool) {
 }
 
 func SelectChoice(gs *game.GameState, choiceIndex int) (Outcome, error) {
-	if gs.Dialogue == nil {
+	state, ok := gs.ActiveDialogue()
+	if !ok {
 		return Outcome{}, fmt.Errorf("no active dialogue")
 	}
 
-	dialogueID := gs.Dialogue.DialogueID
+	dialogueID := state.DialogueID
 
 	d, ok := Dialogues[dialogueID]
 	if !ok {
 		return Outcome{}, fmt.Errorf("dialogue %q not found", dialogueID)
 	}
 
-	node, ok := d.Nodes[gs.Dialogue.NodeID]
+	node, ok := d.Nodes[state.NodeID]
 	if !ok {
-		return Outcome{}, fmt.Errorf("dialogue node %q not found", gs.Dialogue.NodeID)
+		return Outcome{}, fmt.Errorf("dialogue node %q not found", state.NodeID)
 	}
 
 	if choiceIndex < 0 || choiceIndex >= len(node.Choices) {
@@ -86,7 +90,7 @@ func SelectChoice(gs *game.GameState, choiceIndex int) (Outcome, error) {
 			return Outcome{}, fmt.Errorf("dialogue node %q not found", choice.NextNode)
 		}
 
-		gs.Dialogue.NodeID = choice.NextNode
+		state.NodeID = choice.NextNode
 		gs.DialogueProgress[dialogueID].VisitedNodes[choice.NextNode] = true
 
 		return Outcome{}, nil
@@ -117,7 +121,7 @@ func SelectChoice(gs *game.GameState, choiceIndex int) (Outcome, error) {
 		}
 	}
 
-	gs.Dialogue = nil
+	gs.EndInteraction(game.InteractionDialogue)
 
 	return outcome, nil
 }

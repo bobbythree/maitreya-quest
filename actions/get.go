@@ -15,7 +15,12 @@ func Get(gs *game.GameState, cmd parser.Command) string {
 		return "You don't see that."
 	}
 
-	if obj.Parent == "inventory" {
+	state, ok := gs.ObjectStates[obj.ID]
+	if !ok {
+		return "You don't see that."
+	}
+
+	if state.Parent == "inventory" {
 		return "You already have it."
 	}
 
@@ -25,27 +30,25 @@ func Get(gs *game.GameState, cmd parser.Command) string {
 
 	gs.Player.Inventory = append(gs.Player.Inventory, obj.ID)
 
-	if obj.Parent != "" {
+	if state.Parent != "" {
 
-		parent := world.Objects[obj.Parent]
+		parentState, ok := gs.ObjectStates[state.Parent]
+		if ok {
+			for i, childID := range parentState.Contains {
+				if childID == obj.ID {
 
-		for i, childID := range parent.Contains {
-			if childID == obj.ID {
+					parentState.Contains = append(
+						parentState.Contains[:i],
+						parentState.Contains[i+1:]...,
+					)
 
-				parent.Contains = append(
-					parent.Contains[:i],
-					parent.Contains[i+1:]...,
-				)
-
-				world.Objects[parent.ID] = parent
-
-				break
+					break
+				}
 			}
 		}
 	}
 
-	obj.Parent = "inventory"
-	world.Objects[obj.ID] = obj
+	state.Parent = "inventory"
 
 	return "Taken."
 }

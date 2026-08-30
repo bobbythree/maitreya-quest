@@ -21,13 +21,16 @@ func Close(gs *game.GameState, cmd parser.Command) string {
 		return "You can't close that."
 	}
 
-	if !obj.Open {
+	state, ok := gs.ObjectStates[obj.ID]
+	if !ok {
+		return "You can't close that."
+	}
+
+	if !state.Open {
 		return "It's already closed."
 	}
 
-	obj.Open = false
-
-	world.Objects[obj.ID] = obj
+	state.Open = false
 
 	return fmt.Sprintf("You close the %s.", obj.Name)
 }

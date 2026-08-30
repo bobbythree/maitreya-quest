@@ -4,19 +4,32 @@ import "github.com/bobbythree/maitreya-quest/game"
 
 // helper for searching nested containers
 
-func findObjectRecursive(obj Object, target string) (Object, bool) {
-	for _, childID := range obj.Contains {
+func findObjectRecursive(gs *game.GameState, obj Object, target string) (Object, bool) {
+	state, ok := gs.ObjectStates[obj.ID]
+	if !ok {
+		return Object{}, false
+	}
 
-		child := Objects[childID]
+	for _, childID := range state.Contains {
+
+		child, ok := Objects[childID]
+		if !ok {
+			continue
+		}
 
 		if child.Name == target {
 			return child, true
 		}
 
 		if child.Container {
-			if !child.Openable || child.Open {
+			childState, ok := gs.ObjectStates[child.ID]
+			if !ok {
+				continue
+			}
 
-				found, ok := findObjectRecursive(child, target)
+			if !child.Openable || childState.Open {
+
+				found, ok := findObjectRecursive(gs, child, target)
 
 				if ok {
 					return found, true
@@ -37,16 +50,24 @@ func FindVisibleObject(gs *game.GameState, target string) (Object, bool) {
 
 	for _, objID := range room.Objects {
 
-		obj := Objects[objID]
+		obj, ok := Objects[objID]
+		if !ok {
+			continue
+		}
 
 		if obj.Name == target {
 			return obj, true
 		}
 
 		if obj.Container {
-			if !obj.Openable || obj.Open {
+			state, ok := gs.ObjectStates[obj.ID]
+			if !ok {
+				continue
+			}
 
-				found, ok := findObjectRecursive(obj, target)
+			if !obj.Openable || state.Open {
+
+				found, ok := findObjectRecursive(gs, obj, target)
 
 				if ok {
 					return found, true
@@ -59,7 +80,10 @@ func FindVisibleObject(gs *game.GameState, target string) (Object, bool) {
 
 	for _, objID := range gs.Player.Inventory {
 
-		obj := Objects[objID]
+		obj, ok := Objects[objID]
+		if !ok {
+			continue
+		}
 
 		if obj.Name == target {
 			return obj, true

@@ -23,8 +23,13 @@ func Look(gs *game.GameState, cmd parser.Command) string {
 		return "You don't see that."
 	}
 
+	state, ok := gs.ObjectStates[obj.ID]
+	if !ok {
+		return "You don't see that."
+	}
+
 	if obj.Openable {
-		if obj.Open {
+		if state.Open {
 			result.WriteString(obj.OpenDescription)
 		} else {
 			result.WriteString(obj.ClosedDescription)
@@ -33,10 +38,10 @@ func Look(gs *game.GameState, cmd parser.Command) string {
 		result.WriteString(obj.Description)
 	}
 
-	if obj.Container && obj.Open {
-		if len(obj.Contains) > 0 {
+	if obj.Container && state.Open {
+		if len(state.Contains) > 0 {
 			result.WriteString("\nYou see:")
-			for _, insideID := range obj.Contains {
+			for _, insideID := range state.Contains {
 				inside := world.Objects[insideID]
 				result.WriteString("\n- " + inside.Name)
 			}

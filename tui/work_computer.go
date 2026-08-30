@@ -6,44 +6,59 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+
+	"github.com/bobbythree/maitreya-quest/game"
 )
 
 // workComputerUIState holds work computer-specific TUI state.
 type workComputerUIState struct {
-	cursor int
+	cursor         int
+	scanGeneration uint64
 }
 
 // scanStepMsg advances the facility scan.
-type scanStepMsg struct{}
+type scanStepMsg struct {
+	generation uint64
+}
 
 // nextScanStep waits before advancing the scan.
-func nextScanStep() tea.Cmd {
+func nextScanStep(generation uint64) tea.Cmd {
 	return tea.Tick(1500*time.Millisecond, func(time.Time) tea.Msg {
-		return scanStepMsg{}
+		return scanStepMsg{generation: generation}
 	})
 }
 
 // updateWorkComputerScan advances the facility scan.
-func (m Model) updateWorkComputerScan() (tea.Model, tea.Cmd) {
-	// ignore scan messages if the computer is no longer active
-	if m.gameState.WorkComputer == nil {
+func (m Model) updateWorkComputerScan(msg scanStepMsg) (tea.Model, tea.Cmd) {
+	if msg.generation != m.workComputerUI.scanGeneration {
 		return m, nil
 	}
 
-	m.gameState.WorkComputer.ScanStep++
-
-	// continue scan until the fault is reached
-	if m.gameState.WorkComputer.ScanStep < 4 {
-		return m, nextScanStep()
+	// ignore scan messages if the computer is no longer active
+	computer, ok := m.gameState.ActiveWorkComputer()
+	if !ok || computer.Screen != "scanning" {
+		return m, nil
 	}
 
-	m.gameState.WorkComputer.Screen = "fault"
+	computer.ScanStep++
+
+	// continue scan until the fault is reached
+	if computer.ScanStep < 4 {
+		return m, nextScanStep(msg.generation)
+	}
+
+	computer.Screen = "fault"
 
 	return m, nil
 }
 
 // workComputerView renders the work computer interface.
 func (m Model) workComputerView() string {
+	computer, ok := m.gameState.ActiveWorkComputer()
+	if !ok {
+		return ""
+	}
+
 	computerStyle := lipgloss.NewStyle().
 		Width(64).
 		Border(lipgloss.DoubleBorder()).
@@ -60,12 +75,12 @@ func (m Model) workComputerView() string {
 	screen.WriteString("\n\n")
 
 	// render current computer screen
-	switch m.gameState.WorkComputer.Screen {
+	switch computer.Screen {
 	case "menu":
 		screen.WriteString(m.workComputerMenu())
 
 	case "scanning":
-		switch m.gameState.WorkComputer.ScanStep {
+		switch computer.ScanStep {
 		case 0:
 			screen.WriteString("SCANNING FACILITY...")
 		case 1:
@@ -132,10 +147,15 @@ func (m Model) workComputerMenu() string {
 
 // updateWorkComputer handles input while the work computer is active.
 func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+	computer, ok := m.gameState.ActiveWorkComputer()
+	if !ok {
+		return m, nil
+	}
+
 	// exit after unlocking the security door
-	if m.gameState.WorkComputer.Screen == "unlocked" {
+	if computer.Screen == "unlocked" {
 		if msg.String() == "enter" {
-			m.gameState.WorkComputer = nil
+			m.gameState.EndInteraction(game.InteractionWorkComputer)
 			m.workComputerUI.cursor = 0
 			m.history = append(m.history, "The security door to the [north] is now open.")
 		}
@@ -144,22 +164,22 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	}
 
 	// show fault details
-	if m.gameState.WorkComputer.Screen == "fault" {
+	if computer.Screen == "fault" {
 		if msg.String() == "1" {
-			m.gameState.WorkComputer.Screen = "fault_details"
+			computer.Screen = "fault_details"
 		}
 
 		return m, nil
 	}
 
 	// handle fault detail choices
-	if m.gameState.WorkComputer.Screen == "fault_details" {
+	if computer.Screen == "fault_details" {
 		if msg.String() == "1" {
 			m.gameState.Flags["security_door_unlocked"] = true
-			m.gameState.WorkComputer.Screen = "unlocked"
+			computer.Screen = "unlocked"
 		}
 		if msg.String() == "2" {
-			m.gameState.WorkComputer = nil
+			m.gameState.EndInteraction(game.InteractionWorkComputer)
 			m.workComputerUI.cursor = 0
 		}
 
@@ -180,13 +200,14 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		switch m.workComputerUI.cursor {
 		case 0:
 			// start facility scan
-			m.gameState.WorkComputer.Screen = "scanning"
-			m.gameState.WorkComputer.ScanStep = 0
+			computer.Screen = "scanning"
+			computer.ScanStep = 0
+			m.workComputerUI.scanGeneration++
 
-			return m, nextScanStep()
+			return m, nextScanStep(m.workComputerUI.scanGeneration)
 		case 1:
 			// exit
-			m.gameState.WorkComputer = nil
+			m.gameState.EndInteraction(game.InteractionWorkComputer)
 			m.workComputerUI.cursor = 0
 		}
 	}
