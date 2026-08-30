@@ -6,6 +6,8 @@ import (
 
 	tea "charm.land/bubbletea/v2"
 	"charm.land/lipgloss/v2"
+
+	"github.com/bobbythree/maitreya-quest/game"
 )
 
 // workComputerUIState holds work computer-specific TUI state.
@@ -26,24 +28,30 @@ func nextScanStep() tea.Cmd {
 // updateWorkComputerScan advances the facility scan.
 func (m Model) updateWorkComputerScan() (tea.Model, tea.Cmd) {
 	// ignore scan messages if the computer is no longer active
-	if m.gameState.WorkComputer == nil {
+	computer, ok := m.gameState.ActiveWorkComputer()
+	if !ok {
 		return m, nil
 	}
 
-	m.gameState.WorkComputer.ScanStep++
+	computer.ScanStep++
 
 	// continue scan until the fault is reached
-	if m.gameState.WorkComputer.ScanStep < 4 {
+	if computer.ScanStep < 4 {
 		return m, nextScanStep()
 	}
 
-	m.gameState.WorkComputer.Screen = "fault"
+	computer.Screen = "fault"
 
 	return m, nil
 }
 
 // workComputerView renders the work computer interface.
 func (m Model) workComputerView() string {
+	computer, ok := m.gameState.ActiveWorkComputer()
+	if !ok {
+		return ""
+	}
+
 	computerStyle := lipgloss.NewStyle().
 		Width(64).
 		Border(lipgloss.DoubleBorder()).
@@ -60,12 +68,12 @@ func (m Model) workComputerView() string {
 	screen.WriteString("\n\n")
 
 	// render current computer screen
-	switch m.gameState.WorkComputer.Screen {
+	switch computer.Screen {
 	case "menu":
 		screen.WriteString(m.workComputerMenu())
 
 	case "scanning":
-		switch m.gameState.WorkComputer.ScanStep {
+		switch computer.ScanStep {
 		case 0:
 			screen.WriteString("SCANNING FACILITY...")
 		case 1:
@@ -132,10 +140,15 @@ func (m Model) workComputerMenu() string {
 
 // updateWorkComputer handles input while the work computer is active.
 func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
+	computer, ok := m.gameState.ActiveWorkComputer()
+	if !ok {
+		return m, nil
+	}
+
 	// exit after unlocking the security door
-	if m.gameState.WorkComputer.Screen == "unlocked" {
+	if computer.Screen == "unlocked" {
 		if msg.String() == "enter" {
-			m.gameState.WorkComputer = nil
+			m.gameState.EndInteraction(game.InteractionWorkComputer)
 			m.workComputerUI.cursor = 0
 			m.history = append(m.history, "The security door to the [north] is now open.")
 		}
@@ -144,22 +157,22 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	}
 
 	// show fault details
-	if m.gameState.WorkComputer.Screen == "fault" {
+	if computer.Screen == "fault" {
 		if msg.String() == "1" {
-			m.gameState.WorkComputer.Screen = "fault_details"
+			computer.Screen = "fault_details"
 		}
 
 		return m, nil
 	}
 
 	// handle fault detail choices
-	if m.gameState.WorkComputer.Screen == "fault_details" {
+	if computer.Screen == "fault_details" {
 		if msg.String() == "1" {
 			m.gameState.Flags["security_door_unlocked"] = true
-			m.gameState.WorkComputer.Screen = "unlocked"
+			computer.Screen = "unlocked"
 		}
 		if msg.String() == "2" {
-			m.gameState.WorkComputer = nil
+			m.gameState.EndInteraction(game.InteractionWorkComputer)
 			m.workComputerUI.cursor = 0
 		}
 
@@ -180,13 +193,13 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		switch m.workComputerUI.cursor {
 		case 0:
 			// start facility scan
-			m.gameState.WorkComputer.Screen = "scanning"
-			m.gameState.WorkComputer.ScanStep = 0
+			computer.Screen = "scanning"
+			computer.ScanStep = 0
 
 			return m, nextScanStep()
 		case 1:
 			// exit
-			m.gameState.WorkComputer = nil
+			m.gameState.EndInteraction(game.InteractionWorkComputer)
 			m.workComputerUI.cursor = 0
 		}
 	}

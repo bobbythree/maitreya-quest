@@ -1,14 +1,13 @@
 package game
 
 type GameState struct {
-	CurrentRoom      string
-	Player           Player
-	Dialogue         *DialogueState
-	Flags            map[string]bool
-	VisitedRooms     map[string]bool
-	DialogueProgress map[string]*DialogueProgress
-	WorkComputer     *WorkComputerState
-	ObjectStates     map[string]*ObjectState
+	CurrentRoom       string
+	Player            Player
+	Flags             map[string]bool
+	VisitedRooms      map[string]bool
+	DialogueProgress  map[string]*DialogueProgress
+	ObjectStates      map[string]*ObjectState
+	activeInteraction *activeInteraction
 }
 
 type ObjectState struct {
