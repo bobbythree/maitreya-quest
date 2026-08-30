@@ -12,24 +12,31 @@ import (
 
 // workComputerUIState holds work computer-specific TUI state.
 type workComputerUIState struct {
-	cursor int
+	cursor         int
+	scanGeneration uint64
 }
 
 // scanStepMsg advances the facility scan.
-type scanStepMsg struct{}
+type scanStepMsg struct {
+	generation uint64
+}
 
 // nextScanStep waits before advancing the scan.
-func nextScanStep() tea.Cmd {
+func nextScanStep(generation uint64) tea.Cmd {
 	return tea.Tick(1500*time.Millisecond, func(time.Time) tea.Msg {
-		return scanStepMsg{}
+		return scanStepMsg{generation: generation}
 	})
 }
 
 // updateWorkComputerScan advances the facility scan.
-func (m Model) updateWorkComputerScan() (tea.Model, tea.Cmd) {
+func (m Model) updateWorkComputerScan(msg scanStepMsg) (tea.Model, tea.Cmd) {
+	if msg.generation != m.workComputerUI.scanGeneration {
+		return m, nil
+	}
+
 	// ignore scan messages if the computer is no longer active
 	computer, ok := m.gameState.ActiveWorkComputer()
-	if !ok {
+	if !ok || computer.Screen != "scanning" {
 		return m, nil
 	}
 
@@ -37,7 +44,7 @@ func (m Model) updateWorkComputerScan() (tea.Model, tea.Cmd) {
 
 	// continue scan until the fault is reached
 	if computer.ScanStep < 4 {
-		return m, nextScanStep()
+		return m, nextScanStep(msg.generation)
 	}
 
 	computer.Screen = "fault"
@@ -195,8 +202,9 @@ func (m Model) updateWorkComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 			// start facility scan
 			computer.Screen = "scanning"
 			computer.ScanStep = 0
+			m.workComputerUI.scanGeneration++
 
-			return m, nextScanStep()
+			return m, nextScanStep(m.workComputerUI.scanGeneration)
 		case 1:
 			// exit
 			m.gameState.EndInteraction(game.InteractionWorkComputer)

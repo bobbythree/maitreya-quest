@@ -97,7 +97,7 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.width = msg.Width
 
 	case scanStepMsg:
-		return m.updateWorkComputerScan()
+		return m.updateWorkComputerScan(msg)
 	}
 
 	return m, nil
