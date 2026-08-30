@@ -21,17 +21,20 @@ func Open(gs *game.GameState, cmd parser.Command) string {
 		return "You can't open that."
 	}
 
-	if obj.Open {
+	state, ok := gs.ObjectStates[obj.ID]
+	if !ok {
+		return "You can't open that."
+	}
+
+	if state.Open {
 		return "It's already open."
 	}
 
-	if obj.Locked {
+	if state.Locked {
 		return "It's locked"
 	}
 
-	obj.Open = true
-
-	world.Objects[obj.ID] = obj
+	state.Open = true
 
 	return fmt.Sprintf("You open the %s.", obj.Name)
 }
