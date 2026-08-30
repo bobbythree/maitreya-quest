@@ -9,5 +9,6 @@ func NewGame() *GameState {
 		Flags:            make(map[string]bool),
 		VisitedRooms:     make(map[string]bool),
 		DialogueProgress: make(map[string]*DialogueProgress),
+		ObjectStates:     make(map[string]*ObjectState),
 	}
 }
