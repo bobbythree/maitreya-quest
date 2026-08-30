@@ -7,6 +7,7 @@ type GameState struct {
 	Flags            map[string]bool
 	VisitedRooms     map[string]bool
 	DialogueProgress map[string]*DialogueProgress
+	WorkComputer     *WorkComputerState
 }
 
 type DialogueState struct {
@@ -17,4 +18,9 @@ type DialogueState struct {
 type DialogueProgress struct {
 	VisitedNodes map[string]bool
 	Completed    bool
+}
+
+type WorkComputerState struct {
+	Screen   string
+	ScanStep int
 }

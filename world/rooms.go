@@ -16,17 +16,17 @@ var Rooms = map[string]Room{
 		Description: "You are in your small studio apartment which is dimly lit only by artificial light coming in though the window. In the room is your bed, your computer which sits on a desk, one window and a door to the east.",
 		Objects: []string{
 			"desk",
-			"computer",
+			"home_computer",
 			"window",
 			"door",
 			"bed",
 		},
 		Exits: map[string]string{
-			"east": "hallway",
+			"east": "staircase",
 		},
 	},
-	"hallway": {
-		ID:                  "hallway",
+	"staircase": {
+		ID:                  "staircase",
 		Name:                "Staircase",
 		Description:         "You stand on the small landing at the top of the stairs. The door back into your apartment is to the [west]. A staircase leads [down] to the street",
 		FirstVisitNarration: "this is a test of the first visit narration!",
@@ -43,7 +43,7 @@ var Rooms = map[string]Room{
 			"street_man",
 		},
 		Exits: map[string]string{
-			"west": "hallway",
+			"west": "staircase",
 			"work": "work_main",
 		},
 	},
@@ -56,7 +56,8 @@ var Rooms = map[string]Room{
 			"work_computer",
 		},
 		Exits: map[string]string{
-			"west": "work_breakroom",
+			"west":  "work_breakroom",
+			"north": "hallway",
 		},
 	},
 	"work_breakroom": {
@@ -65,6 +66,7 @@ var Rooms = map[string]Room{
 		Description: "A small breakroom.",
 		Objects: []string{
 			"work_computer",
+			"security_door",
 		},
 		Exits: map[string]string{
 			"east": "work_main",

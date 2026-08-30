@@ -1,5 +1,10 @@
 package world
 
+import (
+	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/workcomputer"
+)
+
 type Object struct {
 	ID                string
 	Name              string
@@ -16,6 +21,7 @@ type Object struct {
 	DialogueID        string
 	Parent            string
 	Contains          []string
+	UseAction         func(*game.GameState) string
 }
 
 var Objects = map[string]Object{
@@ -51,8 +57,8 @@ var Objects = map[string]Object{
 		Description: "a small mattress on the floor. Typical.",
 	},
 
-	"computer": {
-		ID:          "computer",
+	"home_computer": {
+		ID:          "home_computer",
 		Name:        "computer",
 		Description: "Your computer sits on top of the desk.",
 	},
@@ -93,5 +99,11 @@ var Objects = map[string]Object{
 		ID:          "work_computer",
 		Name:        "computer",
 		Description: "Your work machine.",
+		UseAction:   workcomputer.Start,
+	},
+	"security_door": {
+		ID:     "security_door",
+		Name:   "door",
+		Locked: true,
 	},
 }
