@@ -28,6 +28,7 @@ type Model struct {
 	// interaction-specific TUI state
 	dialogueUI     dialogueUIState
 	workComputerUI workComputerUIState
+	oldComputerUI  oldComputerUIState
 }
 
 func (m Model) Init() tea.Cmd {
@@ -63,12 +64,13 @@ func NewModel(gs *game.GameState) Model {
 	gs.VisitedRooms[gs.CurrentRoom] = true
 
 	return Model{
-		gameState: gs,
-		history:   []string{initialText},
-		input:     input,
-		logo:      logo,
-		intro:     intro,
-		showIntro: true,
+		gameState:     gs,
+		history:       []string{initialText},
+		input:         input,
+		logo:          logo,
+		intro:         intro,
+		showIntro:     true,
+		oldComputerUI: newOldComputerUIState(),
 	}
 }
 
@@ -87,6 +89,8 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m.updateDialogue(msg)
 		case game.InteractionWorkComputer:
 			return m.updateWorkComputer(msg)
+		case game.InteractionOldComputer:
+			return m.updateOldComputer(msg)
 		case game.InteractionNone:
 			return m.updatePrompt(msg)
 		}
@@ -98,6 +102,9 @@ func (m Model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case scanStepMsg:
 		return m.updateWorkComputerScan(msg)
+
+	case oldComputerStepMsg:
+		return m.updateOldComputerStep(msg)
 	}
 
 	return m, nil
@@ -129,6 +136,8 @@ func (m Model) View() tea.View {
 		bottom = m.dialogueView()
 	case game.InteractionWorkComputer:
 		bottom = m.workComputerView()
+	case game.InteractionOldComputer:
+		bottom = m.oldComputerView()
 	}
 
 	// build room display

@@ -50,4 +50,25 @@ func TestInteractionsAreMutuallyExclusive(t *testing.T) {
 	if _, ok := gs.ActiveDialogue(); ok {
 		t.Fatal("dialogue state remained active with the work computer")
 	}
+
+	if gs.BeginOldComputer(game.OldComputerState{Screen: "loading"}) {
+		t.Fatal("began old computer while work computer was active")
+	}
+
+	if !gs.EndInteraction(game.InteractionWorkComputer) {
+		t.Fatal("could not end the active work computer")
+	}
+
+	if !gs.BeginOldComputer(game.OldComputerState{Screen: "loading"}) {
+		t.Fatal("could not begin old computer after work computer ended")
+	}
+
+	oldComputerState, ok := gs.ActiveOldComputer()
+	if !ok || oldComputerState.Screen != "loading" {
+		t.Fatal("old computer did not become the active interaction")
+	}
+
+	if gs.EndInteraction(game.InteractionWorkComputer) {
+		t.Fatal("ended old computer using the work-computer interaction kind")
+	}
 }

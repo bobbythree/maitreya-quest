@@ -7,12 +7,14 @@ const (
 	InteractionNone InteractionKind = iota
 	InteractionDialogue
 	InteractionWorkComputer
+	InteractionOldComputer
 )
 
 type activeInteraction struct {
 	kind         InteractionKind
 	dialogue     *DialogueState
 	workComputer *WorkComputerState
+	oldComputer  *OldComputerState
 }
 
 // InteractionKind returns the active interaction type, or InteractionNone.
@@ -68,6 +70,29 @@ func (gs *GameState) ActiveWorkComputer() (*WorkComputerState, bool) {
 	}
 
 	return gs.activeInteraction.workComputer, true
+}
+
+// BeginOldComputer starts the old computer if no other interaction is active.
+func (gs *GameState) BeginOldComputer(state OldComputerState) bool {
+	if gs.activeInteraction != nil {
+		return false
+	}
+
+	gs.activeInteraction = &activeInteraction{
+		kind:        InteractionOldComputer,
+		oldComputer: &state,
+	}
+
+	return true
+}
+
+// ActiveOldComputer returns the old-computer state, if it is active.
+func (gs *GameState) ActiveOldComputer() (*OldComputerState, bool) {
+	if gs.activeInteraction == nil || gs.activeInteraction.kind != InteractionOldComputer {
+		return nil, false
+	}
+
+	return gs.activeInteraction.oldComputer, true
 }
 
 // EndInteraction ends the active interaction only when its kind matches.

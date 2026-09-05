@@ -2,6 +2,7 @@ package world
 
 import (
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/oldcomputer"
 	"github.com/bobbythree/maitreya-quest/workcomputer"
 )
 
@@ -105,5 +106,11 @@ var Objects = map[string]Object{
 		ID:     "security_door",
 		Name:   "door",
 		Locked: true,
+	},
+	"old_computer": {
+		ID:          "old_computer",
+		Name:        "computer",
+		Description: "A computer that looks like it's 100 years old sits lifeless on the table.",
+		UseAction:   oldcomputer.Use,
 	},
 }

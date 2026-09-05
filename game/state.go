@@ -31,3 +31,7 @@ type WorkComputerState struct {
 	Screen   string
 	ScanStep int
 }
+
+type OldComputerState struct {
+	Screen string
+}
