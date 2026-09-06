@@ -25,18 +25,20 @@ type oldComputerStepMsg struct {
 func newOldComputerUIState() oldComputerUIState {
 	input := textinput.New()
 	input.Prompt = ""
+	input.EchoMode = textinput.EchoPassword
+	input.EchoCharacter = '*'
 
 	return oldComputerUIState{passwordInput: input}
 }
 
 // nextOldComputerStep waits before advancing the old computer.
 func nextOldComputerStep(generation uint64) tea.Cmd {
-	return tea.Tick(1500*time.Millisecond, func(time.Time) tea.Msg {
+	return tea.Tick(4*time.Second, func(time.Time) tea.Msg {
 		return oldComputerStepMsg{generation: generation}
 	})
 }
 
-// beginOldComputerUI resets transient UI state and starts the loading timer.
+// beginOldComputerUI resets transient UI state and starts the awakening timer.
 func (m *Model) beginOldComputerUI() tea.Cmd {
 	m.oldComputerUI.passwordInput.SetValue("")
 	m.oldComputerUI.passwordInput.Blur()
@@ -57,6 +59,10 @@ func (m Model) updateOldComputerStep(msg oldComputerStepMsg) (tea.Model, tea.Cmd
 	}
 
 	switch computer.Screen {
+	case "awakening":
+		computer.Screen = "loading"
+		return m, nextOldComputerStep(m.oldComputerUI.generation)
+
 	case "loading":
 		computer.Screen = "password"
 		return m, m.oldComputerUI.passwordInput.Focus()
@@ -97,6 +103,9 @@ func (m Model) updateOldComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 func (m Model) oldComputerView() string {
 	computer, ok := m.gameState.ActiveOldComputer()
 	if !ok {
+		return ""
+	}
+	if computer.Screen == "awakening" {
 		return ""
 	}
 

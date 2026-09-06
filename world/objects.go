@@ -110,7 +110,7 @@ var Objects = map[string]Object{
 	"old_computer": {
 		ID:          "old_computer",
 		Name:        "computer",
-		Description: "A computer that looks like it's 100 years old sits lifeless on the table.",
+		Description: "An old computer sits lifeless on the table.",
 		UseAction:   oldcomputer.Use,
 	},
 }

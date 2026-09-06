@@ -4,6 +4,8 @@ import "github.com/bobbythree/maitreya-quest/game"
 
 const destroyedFlag = "old_computer_destroyed"
 
+const awakeningNarration = "Amazingly, and beyone all reason, the computer suddenly comes to life!!!"
+
 // Use describes the result of trying to use the old computer on its own.
 func Use(gs *game.GameState) string {
 	if gs.Flags[destroyedFlag] {
@@ -19,9 +21,9 @@ func Start(gs *game.GameState) string {
 		return "The old computer is dead. It won't turn on again."
 	}
 
-	if !gs.BeginOldComputer(game.OldComputerState{Screen: "loading"}) {
+	if !gs.BeginOldComputer(game.OldComputerState{Screen: "awakening"}) {
 		return "You're already busy."
 	}
 
-	return ""
+	return awakeningNarration
 }

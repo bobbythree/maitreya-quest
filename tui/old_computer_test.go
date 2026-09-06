@@ -45,6 +45,9 @@ func TestPromptStartsOldComputerTimer(t *testing.T) {
 	if got := gs.InteractionKind(); got != game.InteractionOldComputer {
 		t.Fatalf("prompt started interaction kind %v", got)
 	}
+	if got := model.history[len(model.history)-1]; !strings.Contains(got, "Amazingly, and beyone all reason") {
+		t.Fatalf("prompt history did not include awakening narration: %q", got)
+	}
 }
 
 func TestOldComputerLoadingPasswordAndShutdownFlow(t *testing.T) {
@@ -56,15 +59,28 @@ func TestOldComputerLoadingPasswordAndShutdownFlow(t *testing.T) {
 	}
 	generation := model.oldComputerUI.generation
 
-	if view := model.oldComputerView(); !strings.Contains(view, "LOADING DATA FROM EXTERNAL DISK...") {
-		t.Fatalf("loading view was %q", view)
+	if view := model.oldComputerView(); view != "" {
+		t.Fatalf("awakening rendered computer UI %q", view)
 	}
 
 	updated, cmd := model.updateOldComputerStep(oldComputerStepMsg{generation: generation - 1})
 	model = updated.(Model)
 	computer, _ := gs.ActiveOldComputer()
-	if computer.Screen != "loading" || cmd != nil {
-		t.Fatal("stale tick advanced the loading screen")
+	if computer.Screen != "awakening" || cmd != nil {
+		t.Fatal("stale tick advanced the awakening narration")
+	}
+
+	updated, cmd = model.updateOldComputerStep(oldComputerStepMsg{generation: generation})
+	model = updated.(Model)
+	computer, _ = gs.ActiveOldComputer()
+	if computer.Screen != "loading" {
+		t.Fatalf("awakening tick advanced to %q, want loading", computer.Screen)
+	}
+	if cmd == nil {
+		t.Fatal("loading screen did not schedule its timer")
+	}
+	if view := model.oldComputerView(); !strings.Contains(view, "LOADING DATA FROM EXTERNAL DISK...") {
+		t.Fatalf("loading view was %q", view)
 	}
 
 	updated, cmd = model.updateOldComputerStep(oldComputerStepMsg{generation: generation})
@@ -81,6 +97,10 @@ func TestOldComputerLoadingPasswordAndShutdownFlow(t *testing.T) {
 	model = updated.(Model)
 	if got := model.oldComputerUI.passwordInput.Value(); got != "x" {
 		t.Fatalf("password input is %q, want x", got)
+	}
+	passwordView := model.oldComputerView()
+	if !strings.Contains(passwordView, "*") || strings.Contains(passwordView, "x") {
+		t.Fatalf("password view did not mask input: %q", passwordView)
 	}
 
 	updated, cmd = model.Update(tea.KeyPressMsg(tea.Key{Code: tea.KeyEnter}))
@@ -130,6 +150,8 @@ func TestOldComputerAcceptsEmptyPassword(t *testing.T) {
 	model.beginOldComputerUI()
 
 	updated, _ := model.updateOldComputerStep(oldComputerStepMsg{generation: model.oldComputerUI.generation})
+	model = updated.(Model)
+	updated, _ = model.updateOldComputerStep(oldComputerStepMsg{generation: model.oldComputerUI.generation})
 	model = updated.(Model)
 	updated, cmd := model.updateOldComputer(tea.KeyPressMsg(tea.Key{Code: tea.KeyEnter}))
 	model = updated.(Model)

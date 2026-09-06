@@ -31,23 +31,26 @@ func TestUseOldComputerDirectlyDoesNotStartInteraction(t *testing.T) {
 }
 
 func TestUseThumbdriveWithOldComputerStartsInteraction(t *testing.T) {
+	const narration = "Amazingly, and beyone all reason, the computer suddenly comes to life!!!"
 	tests := []string{
 		"use thumbdrive with computer",
 		"use thumbdrive on computer",
+		"use thumbdrive in computer",
 		"use computer with thumbdrive",
 		"use computer on thumbdrive",
+		"use computer in thumbdrive",
 	}
 
 	for _, input := range tests {
 		t.Run(input, func(t *testing.T) {
 			gs := oldComputerUseTestGame()
 
-			if got := Use(gs, parser.Parse(input)); got != "" {
+			if got := Use(gs, parser.Parse(input)); got != narration {
 				t.Fatalf("use returned %q", got)
 			}
 
 			computer, ok := gs.ActiveOldComputer()
-			if !ok || computer.Screen != "loading" {
+			if !ok || computer.Screen != "awakening" {
 				t.Fatal("combination did not start the old computer")
 			}
 		})
@@ -69,14 +72,36 @@ func TestUseThumbdriveCannotRestartDestroyedOldComputer(t *testing.T) {
 }
 
 func TestUseThumbdriveWithHomeComputerKeepsExistingResponse(t *testing.T) {
-	gs := game.NewGame()
-	world.InitializeObjectStates(gs)
-	gs.Player.Inventory = append(gs.Player.Inventory, "thumbdrive")
-	gs.ObjectStates["thumbdrive"].Parent = "inventory"
-
-	got := Use(gs, parser.Parse("use thumbdrive with computer"))
 	want := "This thumbdrive doesn't fit in the computer's port. You'll have to find a wayyy older computer."
-	if got != want {
-		t.Fatalf("home-computer use returned %q, want %q", got, want)
+	for _, preposition := range []string{"with", "in", "on"} {
+		t.Run(preposition, func(t *testing.T) {
+			gs := game.NewGame()
+			world.InitializeObjectStates(gs)
+			gs.Player.Inventory = append(gs.Player.Inventory, "thumbdrive")
+			gs.ObjectStates["thumbdrive"].Parent = "inventory"
+
+			got := Use(gs, parser.Parse("use thumbdrive "+preposition+" computer"))
+			if got != want {
+				t.Fatalf("home-computer use returned %q, want %q", got, want)
+			}
+		})
+	}
+}
+
+func TestUseThumbdriveWithWorkComputerExplainsMismatch(t *testing.T) {
+	want := "this computer is pretty old, but it's not THAT old!"
+	for _, preposition := range []string{"with", "in", "on"} {
+		t.Run(preposition, func(t *testing.T) {
+			gs := game.NewGame()
+			world.InitializeObjectStates(gs)
+			gs.CurrentRoom = "work_breakroom"
+			gs.Player.Inventory = append(gs.Player.Inventory, "thumbdrive")
+			gs.ObjectStates["thumbdrive"].Parent = "inventory"
+
+			got := Use(gs, parser.Parse("use thumbdrive "+preposition+" computer"))
+			if got != want {
+				t.Fatalf("work-computer use returned %q, want %q", got, want)
+			}
+		})
 	}
 }

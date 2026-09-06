@@ -21,13 +21,13 @@ func TestUseDoesNotStartInteraction(t *testing.T) {
 func TestStartUsesActiveInteraction(t *testing.T) {
 	gs := game.NewGame()
 
-	if got := Start(gs); got != "" {
+	if got := Start(gs); got != awakeningNarration {
 		t.Fatalf("starting old computer returned %q", got)
 	}
 
 	computer, ok := gs.ActiveOldComputer()
-	if !ok || computer.Screen != "loading" {
-		t.Fatal("start did not activate the old-computer loading screen")
+	if !ok || computer.Screen != "awakening" {
+		t.Fatal("start did not activate the old-computer awakening narration")
 	}
 }
 

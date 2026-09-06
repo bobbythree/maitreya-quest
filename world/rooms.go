@@ -58,6 +58,7 @@ var Rooms = map[string]Room{
 		Exits: map[string]string{
 			"west":  "work_breakroom",
 			"north": "work_hallway",
+			"home":  "apartment",
 		},
 	},
 	"work_breakroom": {
@@ -86,7 +87,7 @@ var Rooms = map[string]Room{
 	"room_108": {
 		ID:                  "room_108",
 		Name:                "Room 108",
-		FirstVisitNarration: "You enter room 108 what has the bad sensor. By the looks of it this is an storage room full of old forgotten technology. An old computer cathes your eye.",
+		FirstVisitNarration: "You enter room 108 what has the bad sensor. By the looks of it this is an storage room full of old forgotten technology. An old computer catches your eye.",
 		Description:         "In this room there is an old computer and various old gadgets and outdated technologies. An old computer sits on a table. The door to the [east] leads back out to the hallway.",
 		Objects: []string{
 			"old_computer",

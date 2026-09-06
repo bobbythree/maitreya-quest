@@ -45,18 +45,21 @@ func Use(gs *game.GameState, cmd parser.Command) string {
 
 	isOldComputerPair := objA.ID == "thumbdrive" && objB.ID == "old_computer" ||
 		objA.ID == "old_computer" && objB.ID == "thumbdrive"
-	if isOldComputerPair && (cmd.Preposition == "with" || cmd.Preposition == "on") {
+	if isOldComputerPair {
 		return oldcomputer.Start(gs)
+	}
+
+	if objA.ID == "thumbdrive" && objB.ID == "work_computer" {
+		return "this computer is pretty old, but it's not THAT old!"
+	}
+
+	if objA.ID == "thumbdrive" && objB.ID == "home_computer" {
+		return "This thumbdrive doesn't fit in the computer's port. You'll have to find a wayyy older computer."
 	}
 
 	// Keep "on" limited to combinations that explicitly support it.
 	if cmd.Preposition == "on" {
 		return "You can't do that."
-	}
-
-	// thumbdrive -> home computer interaction
-	if objA.ID == "thumbdrive" && objB.ID == "home_computer" {
-		return "This thumbdrive doesn't fit in the computer's port. You'll have to find a wayyy older computer."
 	}
 
 	return "Nothing happens."
