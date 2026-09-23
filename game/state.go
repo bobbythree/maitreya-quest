@@ -33,5 +33,7 @@ type WorkComputerState struct {
 }
 
 type OldComputerState struct {
-	Screen string
+	Screen   string
+	Computer string
+	Error    string
 }

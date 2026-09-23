@@ -49,6 +49,41 @@ func Use(gs *game.GameState, cmd parser.Command) string {
 		return oldcomputer.Start(gs)
 	}
 
+	isAdapterThumbdrivePair := objA.ID == "adapter" && objB.ID == "thumbdrive" ||
+		objA.ID == "thumbdrive" && objB.ID == "adapter"
+	if isAdapterThumbdrivePair {
+		adapter := gs.ObjectStates["adapter"]
+		thumbdrive := gs.ObjectStates["thumbdrive"]
+		if thumbdrive.Parent == "adapter" {
+			return "The thumbdrive is already connected to the adapter."
+		}
+		// Keep the combined item in the adapter's existing inventory slot.
+		if adapter.Parent != "inventory" || thumbdrive.Parent != "inventory" {
+			return "You need to take both items first."
+		}
+		for i, id := range gs.Player.Inventory {
+			if id == "thumbdrive" {
+				gs.Player.Inventory = append(gs.Player.Inventory[:i], gs.Player.Inventory[i+1:]...)
+				break
+			}
+		}
+		thumbdrive.Parent = "adapter"
+		adapter.Contains = append(adapter.Contains, "thumbdrive")
+		return "You connect the thumbdrive to the adapter."
+	}
+
+	isAdapterHomePair := objA.ID == "adapter" && objB.ID == "home_computer" ||
+		objA.ID == "home_computer" && objB.ID == "adapter"
+	if isAdapterHomePair {
+		if gs.ObjectStates["thumbdrive"].Parent != "adapter" {
+			return "that doesn't quite work....we're missing something"
+		}
+		if !gs.BeginOldComputer(game.OldComputerState{Screen: "password", Computer: "home"}) {
+			return "You're already busy."
+		}
+		return "The computer asks for a password."
+	}
+
 	if objA.ID == "thumbdrive" && objB.ID == "work_computer" {
 		return "this computer is pretty old, but it's not THAT old!"
 	}

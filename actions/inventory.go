@@ -17,7 +17,11 @@ func Inventory(gs *game.GameState, cmd parser.Command) string {
 	result.WriteString("You are carrying:")
 
 	for _, item := range gs.Player.Inventory {
-		result.WriteString("\n- " + item)
+		label := item
+		if item == "adapter" && gs.ObjectStates["thumbdrive"].Parent == "adapter" {
+			label = "adapter (with thumbdrive)"
+		}
+		result.WriteString("\n- " + label)
 	}
 
 	return result.String()

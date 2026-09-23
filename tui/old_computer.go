@@ -38,12 +38,16 @@ func nextOldComputerStep(generation uint64) tea.Cmd {
 	})
 }
 
-// beginOldComputerUI resets transient UI state and starts the awakening timer.
+// beginOldComputerUI resets transient UI state for either computer.
 func (m *Model) beginOldComputerUI() tea.Cmd {
 	m.oldComputerUI.passwordInput.SetValue("")
 	m.oldComputerUI.passwordInput.Blur()
 	m.oldComputerUI.generation++
 
+	computer, _ := m.gameState.ActiveOldComputer()
+	if computer.Screen == "password" {
+		return m.oldComputerUI.passwordInput.Focus()
+	}
 	return nextOldComputerStep(m.oldComputerUI.generation)
 }
 
@@ -85,12 +89,24 @@ func (m Model) updateOldComputer(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 	}
 
 	if msg.String() == "enter" {
+		if computer.Computer == "home" {
+			// Introduce the correct password and successful login here when known.
+			computer.Error = "password incorrect, try again"
+			m.oldComputerUI.passwordInput.SetValue("")
+			return m, nil
+		}
 		m.gameState.Flags["old_computer_destroyed"] = true
 		computer.Screen = "shutdown"
 		m.oldComputerUI.passwordInput.Blur()
 		m.oldComputerUI.generation++
 
 		return m, nextOldComputerStep(m.oldComputerUI.generation)
+	}
+	if msg.String() == "esc" && computer.Computer == "home" {
+		m.gameState.EndInteraction(game.InteractionOldComputer)
+		m.oldComputerUI.passwordInput.SetValue("")
+		m.oldComputerUI.passwordInput.Blur()
+		return m, nil
 	}
 
 	var cmd tea.Cmd
@@ -121,11 +137,22 @@ func (m Model) oldComputerView() string {
 		screen.WriteString("LOADING DATA FROM EXTERNAL DISK...")
 
 	case "password":
-		screen.WriteString("DISK ENCRYPTED")
+		if computer.Computer == "home" {
+			screen.WriteString("COMPUTER LOCKED")
+		} else {
+			screen.WriteString("DISK ENCRYPTED")
+		}
 		screen.WriteString("\n")
 		screen.WriteString("ENTER PASSWORD:")
 		screen.WriteString("\n")
 		screen.WriteString(m.oldComputerUI.passwordInput.View())
+		if computer.Error != "" {
+			screen.WriteString("\n")
+			screen.WriteString(computer.Error)
+		}
+		if computer.Computer == "home" {
+			screen.WriteString("\nPress Esc to leave")
+		}
 
 	case "shutdown":
 		screen.WriteString("ACCESS DENIED")
