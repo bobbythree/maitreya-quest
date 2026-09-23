@@ -6,6 +6,7 @@ import (
 	tea "charm.land/bubbletea/v2"
 
 	"github.com/bobbythree/maitreya-quest/actions"
+	"github.com/bobbythree/maitreya-quest/game"
 	"github.com/bobbythree/maitreya-quest/parser"
 )
 
@@ -34,6 +35,7 @@ func (m Model) updatePrompt(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 
 		// execute command
 		previousRoom := m.gameState.CurrentRoom
+		previousInteraction := m.gameState.InteractionKind()
 		result := action(m.gameState, cmd)
 		roomChanged := previousRoom != m.gameState.CurrentRoom
 
@@ -52,6 +54,10 @@ func (m Model) updatePrompt(msg tea.KeyPressMsg) (tea.Model, tea.Cmd) {
 		}
 
 		m.input.SetValue("")
+
+		if previousInteraction == game.InteractionNone && m.gameState.InteractionKind() == game.InteractionOldComputer {
+			return m, m.beginOldComputerUI()
+		}
 
 		return m, nil
 	}

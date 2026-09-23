@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/oldcomputer"
 	"github.com/bobbythree/maitreya-quest/parser"
 	"github.com/bobbythree/maitreya-quest/world"
 )
@@ -32,7 +33,7 @@ func Use(gs *game.GameState, cmd parser.Command) string {
 		return "Use it with what?"
 	}
 
-	if cmd.Preposition != "with" && cmd.Preposition != "in" {
+	if cmd.Preposition != "with" && cmd.Preposition != "in" && cmd.Preposition != "on" {
 		return "You can't do that."
 	}
 
@@ -42,10 +43,23 @@ func Use(gs *game.GameState, cmd parser.Command) string {
 		return fmt.Sprintf("You don't see a %s.", indirectObject)
 	}
 
-	// thumbdrive -> computer interaction
+	isOldComputerPair := objA.ID == "thumbdrive" && objB.ID == "old_computer" ||
+		objA.ID == "old_computer" && objB.ID == "thumbdrive"
+	if isOldComputerPair {
+		return oldcomputer.Start(gs)
+	}
+
+	if objA.ID == "thumbdrive" && objB.ID == "work_computer" {
+		return "this computer is pretty old, but it's not THAT old!"
+	}
 
 	if objA.ID == "thumbdrive" && objB.ID == "home_computer" {
 		return "This thumbdrive doesn't fit in the computer's port. You'll have to find a wayyy older computer."
+	}
+
+	// Keep "on" limited to combinations that explicitly support it.
+	if cmd.Preposition == "on" {
+		return "You can't do that."
 	}
 
 	return "Nothing happens."

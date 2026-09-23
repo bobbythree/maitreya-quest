@@ -2,6 +2,7 @@ package world
 
 import (
 	"github.com/bobbythree/maitreya-quest/game"
+	"github.com/bobbythree/maitreya-quest/oldcomputer"
 	"github.com/bobbythree/maitreya-quest/workcomputer"
 )
 
@@ -105,5 +106,23 @@ var Objects = map[string]Object{
 		ID:     "security_door",
 		Name:   "door",
 		Locked: true,
+	},
+	"old_computer": {
+		ID:          "old_computer",
+		Name:        "computer",
+		Description: "An old computer sits lifeless on the table.",
+		UseAction:   oldcomputer.Use,
+	},
+	"adapter": {
+		ID:          "adapter",
+		Name:        "adapter",
+		Description: "An adapter that looks like it would fit your thumbdrive.",
+		Portable:    true,
+		Parent:      "",
+	},
+	"gadgets": {
+		ID:          "gadgets",
+		Name:        "gadgets",
+		Description: "A smattering of old junk and broken shit. The only thing that looks intact is a small adapter.",
 	},
 }

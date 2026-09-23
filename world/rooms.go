@@ -57,19 +57,45 @@ var Rooms = map[string]Room{
 		},
 		Exits: map[string]string{
 			"west":  "work_breakroom",
-			"north": "hallway",
+			"north": "work_hallway",
+			"home":  "apartment",
 		},
 	},
 	"work_breakroom": {
 		ID:          "work_breakroom",
 		Name:        "Break Room",
-		Description: "A small breakroom.",
+		Description: "A small breakroom. There is a fridge and table. Go [east] to return to your office.",
 		Objects: []string{
 			"work_computer",
 			"security_door",
 		},
 		Exits: map[string]string{
 			"east": "work_main",
+		},
+	},
+	"work_hallway": {
+		ID:                  "work_hallway",
+		Name:                "Hallway",
+		FirstVisitNarration: "You enter the main hallway inside the security door. There are many doors, room [108] is open",
+		Description:         "The main hallway. [south] gets you back to the office. Room [108] is open.",
+		Objects:             []string{},
+		Exits: map[string]string{
+			"south": "work_main",
+			"108":   "room_108",
+		},
+	},
+	"room_108": {
+		ID:                  "room_108",
+		Name:                "Room 108",
+		FirstVisitNarration: "You enter room 108 what has the bad sensor. By the looks of it this is an storage room full of old forgotten technology. An old computer catches your eye.",
+		Description:         "In this room you see an old computer sitting on a desk. A pile of random gadgets are piled in the corner. The door to the [east] leads back out to the hallway.",
+		Objects: []string{
+			"old_computer",
+			"gadgets",
+			"adapter",
+		},
+		Exits: map[string]string{
+			"east": "work_hallway",
 		},
 	},
 }
